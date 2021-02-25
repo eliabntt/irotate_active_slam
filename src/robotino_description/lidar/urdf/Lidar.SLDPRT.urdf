@@ -1,0 +1,43 @@
+<robot
+  name="Lidar.SLDPRT">
+  <link
+    name="lidar">
+    <inertial>
+      <origin
+        xyz="-0.00056497 7.11770000114844E-09 0.018756"
+        rpy="0 0 0" />
+      <mass
+        value="0.15915" />
+      <inertia
+        ixx="7.2795244626149E-05"
+        ixy="8.59363271873857E-12"
+        ixz="-1.00192037963258E-06"
+        iyy="7.06968247556297E-05"
+        iyz="-1.1608849365102E-11"
+        izz="0.000102602650447107" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5707963267949 0 0" />
+      <geometry>
+        <mesh
+          filename="package://lidar/meshes/lidar.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64314 0.61569 0.6 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5707963267949 0 0" />
+      <geometry>
+        <mesh
+          filename="package://lidar/meshes/lidar.STL" />
+      </geometry>
+    </collision>
+  </link>
+</robot>

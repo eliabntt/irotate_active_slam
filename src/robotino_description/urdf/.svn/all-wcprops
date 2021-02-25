@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf
+END
+robotino_body.urdf.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino_body.urdf.xacro
+END
+robotino.urdf.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino.urdf.xacro
+END
+robotino_platform_kinect.urdf.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino_platform_kinect.urdf.xacro
+END
+robotino_platform.urdf.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino_platform.urdf.xacro
+END
+robotino.urdf
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino.urdf
+END
+robotino_platform_kinect.urdf
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino_platform_kinect.urdf
+END
+robotino_parts.urdf.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino_parts.urdf.xacro
+END
+robotino_platform.urdf
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/urdf/robotino_platform.urdf
+END

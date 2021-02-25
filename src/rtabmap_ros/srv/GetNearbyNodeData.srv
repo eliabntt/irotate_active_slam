@@ -1,0 +1,8 @@
+#request
+geometry_msgs/PoseStamped pose
+float32 rad
+int32 k
+---
+#response
+NodeData[] data
+int32[] value

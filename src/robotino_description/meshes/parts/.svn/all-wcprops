@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/parts
+END
+robotino_wheel.dae
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/parts/robotino_wheel.dae
+END
+front.png
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/parts/front.png
+END
+robotino_base.dae
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/parts/robotino_base.dae
+END
+angle_bracket_usb_hub.dae
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/parts/angle_bracket_usb_hub.dae
+END
+panel.png
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/parts/panel.png
+END

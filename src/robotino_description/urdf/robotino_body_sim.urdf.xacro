@@ -1,0 +1,256 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:property name="M_SCALE" value="0.01"/>
+    <xacro:property name="BASE_RADIUS" value="0.18"/>
+    <xacro:property name="BASE_HEIGHT" value="0.03"/>
+    <xacro:property name="BASE_MASS" value="0.5"/> <!-- 20 -->
+
+    <xacro:property name="M_PI" value="3.1415926535897931"/>
+    <xacro:property name="width" value="0.5"/> <!-- Square dimensions (widthxwidth) of beams -->
+    <xacro:property name="height" value="0.5"/> <!-- Link 1 -->
+    <xacro:property name="width_2" value="0.1"/> <!-- Square dimensions (widthxwidth) of beams -->
+    <xacro:property name="height_2" value="0.5"/> <!-- Link 1 -->
+    <xacro:property name="axel_offset" value="0.05"/> <!-- Space btw top of beam and the each joint -->
+
+    <xacro:property name="roll" value="${M_PI/2}"/> <!-- Space btw top of beam and the each joint -->
+    <xacro:property name="yaw" value="${M_PI/2}"/> <!-- Space btw top of beam and the each joint -->
+
+    <xacro:macro name="base_gazebo" params="name">
+        <gazebo reference="origin">
+            <material>Gazebo/Grey</material>
+            <gravity>true</gravity>
+            <self_collide>false</self_collide>
+        </gazebo>
+        <gazebo reference="base_link">
+            <material>Gazebo/Grey</material>
+            <gravity>true</gravity>
+            <self_collide>false</self_collide>
+        </gazebo>
+        <gazebo reference="${name}_body_link">
+            <material>Gazebo/Grey</material>
+            <gravity>true</gravity>
+            <self_collide>false</self_collide>
+        </gazebo>
+    </xacro:macro>
+
+    <link name="world"/>
+
+    <joint name="joint_x" type="prismatic">
+        <parent link="world"/>
+        <child link="int_link_xy"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="10" velocity="10" lower="-1000" upper="1000"/>
+    </joint>
+
+    <link name="int_link_xy">
+        <inertial>
+            <mass value="0.001"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0"
+                     iyy="0.000" iyz="0.0"
+                     izz="0.000"/>
+        </inertial>
+    </link>
+
+    <joint name="joint_y" type="prismatic">
+        <parent link="int_link_xy"/>
+        <child link="int_link_yw"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="10" velocity="10" lower="-1000" upper="1000"/>
+    </joint>
+
+    <link name="int_link_yw">
+        <inertial>
+            <mass value="0.001"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.000" ixy="0.0" ixz="0.0"
+                     iyy="0.000" iyz="0.0"
+                     izz="0.00"/>
+        </inertial>
+    </link>
+
+    <joint name="revolute_w" type="continuous">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="int_link_yw"/>
+        <child link="base_link"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- robotino_body -->
+    <xacro:macro name="robotino_body">
+        <!-- base_link -->
+        <link name="base_link"/>
+
+        <joint name="base_body_joint" type="fixed">
+            <parent link="base_link"/>
+            <child link="base_body_link"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </joint>
+
+
+        <link name="base_body_link">
+            <inertial>
+                <mass value="${BASE_MASS}"/>
+                <origin xyz="0 0 0.05"/>
+                <inertia ixx="0.8750" ixy="0.0" ixz="0.0"
+                         iyy="0.875" iyz="0.0"
+                         izz="1"/>
+            </inertial>
+            <visual>
+                <origin xyz="0.01 0 0" rpy="0 0 ${M_PI/2}"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/robotino_base.dae"
+                          scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/robotino_base.stl"
+                          scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="base_link">
+            <material>Gazebo/White</material>
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <!-- wheels -->
+        <xacro:wheel name="wheel0" parent="base_link">
+            <origin xyz="0.065 0.11 0.04" rpy="0 0 ${M_PI/3}"/>
+            <axis xyz="-1 0 0"/>
+        </xacro:wheel>
+        <xacro:wheel name="wheel1" parent="base_link">
+            <origin xyz="-0.13 0 0.04" rpy="0 0 ${M_PI}"/>
+            <axis xyz="-1 0 0"/>
+        </xacro:wheel>
+        <xacro:wheel name="wheel2" parent="base_link">
+            <origin xyz="0.065 -0.11 0.04" rpy="0 0 -${M_PI/3}"/>
+            <axis xyz="-1 0 0"/>
+        </xacro:wheel>
+
+        <!-- others -->
+        <!-- lasersensor -->
+        <xacro:lasersensor name="lasersensor" parent="base_link">
+            <origin xyz="0.0 0 0.26" rpy="0 0 0"/>
+        </xacro:lasersensor>
+
+        <!-- pantilt holder part 1-->
+        <xacro:pantilt name="pantilt" parent="base_link">
+            <origin xyz="0.0 0 0.33" rpy="0 0 0"/>
+        </xacro:pantilt>
+
+        <!-- pantilt holder part 2-->
+        <xacro:pantiltring name="pantiltring" parent="base_link">
+            <origin xyz="0.0 0 0.173" rpy="0 0 0"/>
+        </xacro:pantiltring>
+
+        <!-- pantilt holder part 3-->
+        <xacro:cameraholder name="cameraholder" parent="pantilt_link">
+            <origin xyz="0.0 0 0" rpy="0 0 0"/>
+        </xacro:cameraholder>
+
+        <!-- imu -->
+        <xacro:imu name="imu" parent="camera_link">
+            <origin xyz="0.0 0 0" rpy="0 0 0"/>
+        </xacro:imu>
+
+        <!-- gazebo control -->
+        <gazebo reference="lasersensor_link">
+            <sensor type="ray" name="head_hokuyo_sensor">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>true</visualize>
+                <update_rate>60</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <!-- <samples>720</samples> -->
+                            <resolution>1</resolution>
+                            <samples>360</samples>
+                            <min_angle>-3.14159</min_angle>  <!-- -1.570796 -->
+                            <max_angle>+3.14159</max_angle>   <!-- 1.570796 -->
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.10</min>
+                        <max>50.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+                    <topicName>robot/laser/scan</topicName>
+                    <robotNamespace>/</robotNamespace>
+                    <frameName>lasersensor_link</frameName>
+                </plugin>
+            </sensor>
+        </gazebo>
+
+        <gazebo>
+            <plugin name="robotino_plugin" filename="librobotino_plugin.so">
+                <jointName>wheel0_joint, wheel1_joint, wheel2_joint, joint_x, joint_y,
+                    revolute_w
+                </jointName>
+            </plugin>
+        </gazebo>
+        <gazebo>
+            <plugin name="robotino_plugin" filename="librobotino_camera_plugin.so"/>
+        </gazebo>
+        <gazebo>
+            <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+                <robotNamespace>/rrbot</robotNamespace>
+            </plugin>
+        </gazebo>
+
+        <!-- imu -->
+        <gazebo>
+            <plugin name="imu_cam_controller" filename="libhector_gazebo_ros_imu.so">
+                <updateRate>150.0</updateRate>
+                <bodyName>cameraholder_link</bodyName>
+                <topicName>imu_cam/data</topicName>
+                <serviceName>imu_cam_service</serviceName>
+                <frame_id>odom</frame_id>
+                <alwaysOn>true</alwaysOn>
+
+                <accelGaussianNoise>0.03 0.03 0.03</accelGaussianNoise>
+                <accelDrift>0.00 0.00 0.00</accelDrift>
+
+                <rateGaussianNoise>0.01 0.01 0.01</rateGaussianNoise>
+                <rateDrift>0.0001 0.0001 0.0001</rateDrift>
+            </plugin>
+
+            <plugin name="imu_body_controller" filename="libhector_gazebo_ros_imu.so">
+                <updateRate>150.0</updateRate>
+                <bodyName>base_link</bodyName>
+                <topicName>imu_body/data</topicName>
+                <serviceName>imu_body_service</serviceName>
+                <frame_id>odom</frame_id>
+                <alwaysOn>true</alwaysOn>
+
+                <accelGaussianNoise>0.03 0.03 0.03</accelGaussianNoise>
+                <accelDrift>0.00 0.00 0.00</accelDrift>
+
+                <rateGaussianNoise>0.002 0.002 0.002</rateGaussianNoise>
+                <rateDrift>0.0001 0.0001 0.0001</rateDrift>
+            </plugin>
+        </gazebo>
+        <gazebo>
+            <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+                <alwaysOn>true</alwaysOn>
+                <updateRate>50.0</updateRate>
+                <bodyName>base_link</bodyName>
+                <topicName>ground_truth/state</topicName>
+                <gaussianNoise>0.00</gaussianNoise>
+                <frameName>world</frameName>
+                <xyzOffsets>0 0 0</xyzOffsets>
+                <rpyOffsets>0 0 0</rpyOffsets>
+            </plugin>
+        </gazebo>
+    </xacro:macro>
+</robot>

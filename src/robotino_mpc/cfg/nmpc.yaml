@@ -1,0 +1,12 @@
+## Controller Parameters:
+sampling_time: 0.05    #IMPORTANT: set this equal to the rate of odometry msg
+pred_sampling_time: 0.1
+
+odom_robot: "/odometry/filtered"
+odom_cam: "/camera/odometry/filtered"
+dest: "/waypoint"
+obstacles: "/standalone_converter/costmap_obstacles"
+cmd_vel_robot: "/cmd_vel"
+cmd_vel_cam: "/camera/cmd_vel"
+traj: "/traj"
+rob_state: "/mpc/state"

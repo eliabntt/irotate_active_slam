@@ -1,0 +1,6 @@
+#request
+
+---
+#response
+geometry_msgs/Pose2D start_pose
+geometry_msgs/Pose2D[] frontier_list

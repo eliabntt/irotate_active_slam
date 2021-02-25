@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/!svn/ver/3109/robotino-ros-pkg/trunk/catkin-pkg/robotino_teleop
+END
+package.xml
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_teleop/package.xml
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/!svn/ver/3109/robotino-ros-pkg/trunk/catkin-pkg/robotino_teleop/CMakeLists.txt
+END

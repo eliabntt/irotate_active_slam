@@ -1,0 +1,96 @@
+<robot
+  name="pantilt">
+  <link
+    name="camerabase_Link">
+    <inertial>
+      <origin
+        xyz="0.00086946073426355 0.000760676023592356 0.053383812404842"
+        rpy="0 0 0" />
+      <mass
+        value="1.77087801804482" />
+      <inertia
+        ixx="0.0221267132530347"
+        ixy="-1.02123402825012E-05"
+        ixz="-0.000197429877195084"
+        iyy="0.0220664294803807"
+        iyz="-0.000179571760966586"
+        izz="0.016544737609366" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://pantilt/meshes/camerabase_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://pantilt/meshes/camerabase_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="camerholder_Link">
+    <inertial>
+      <origin
+        xyz="0.0063349 1.674E-05 0.25969"
+        rpy="0 0 0" />
+      <mass
+        value="0.061321" />
+      <inertia
+        ixx="7.6312E-05"
+        ixy="-4.3702E-09"
+        ixz="-1.0178E-05"
+        iyy="7.7966E-05"
+        iyz="-2.6895E-08"
+        izz="1.6538E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://pantilt/meshes/camerholder_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://pantilt/meshes/camerholder_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="cameraholder_Joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="camerabase_Link" />
+    <child
+      link="camerholder_Link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+</robot>

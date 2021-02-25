@@ -1,0 +1,6 @@
+<launch>
+  <node name="frontier_exploration" pkg="active_slam"
+        type="frontier_exploration_node" output="screen" respawn="true">
+        <param name="frontier_size" type="int" value="5"/>
+  </node>
+</launch>

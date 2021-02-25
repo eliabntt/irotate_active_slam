@@ -1,0 +1,10 @@
+<launch>
+    <arg name="namespace" default="robotino"/>
+    <group ns="$(arg namespace)">
+        <node name="robotino_mpc" pkg="robotino_mpc" type="robotino_mpc" respawn="true" clear_params="true" output="screen">
+            <remap from="odometry" to="/odometry/filtered" />
+            <rosparam file="$(find robotino_mpc)/cfg/nmpc.yaml" />
+            <param name="verbose" value="true" />
+        </node>
+    </group>
+</launch>

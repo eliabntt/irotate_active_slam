@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="robotino_camera_heading" type="camera_best_heading_node" name="camera_best_heading" output="screen" respawn="false">
+        <rosparam file="$(find robotino_simulations)/config/camera.yaml" command="load"/>
+    </node>
+</launch>

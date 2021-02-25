@@ -1,0 +1,59 @@
+<launch>
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <!-- <arg name="hostname" default="172.26.1.1" /> -->
+    <arg name="debug" default="false"/>
+    <arg name="gui" default="false"/>
+    <arg name="pause" default="false"/>
+    <arg name="delete" default=""/>
+    <arg name="world" default="$(find actor_plugin)/world/arena_RAL.world"/>
+    <arg name="sim" default="true"/>
+
+    <!-- load camera and lidar -->
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+        <arg name="enable_infra1" value="false"/>
+        <arg name="enable_infra2" value="false"/>
+        <arg name="enable_fisheye" value="false"/>
+        <arg name="align_depth" value="true"/>
+        <arg name="clip_distance" value="3"/>
+        <arg name="allow_no_texture_points" value="false"/>
+    </include>
+
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+        <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
+        <param name="serial_baudrate" type="int" value="115200"/><!--A1/A2 -->
+        <!--param name="serial_baudrate"     type="int"    value="256000"--><!--A3 -->
+        <param name="frame_id" type="string" value="base_link"/>
+        <param name="inverted" type="bool" value="false"/>
+        <param name="angle_compensate" type="bool" value="true"/>
+        <param name="scan_mode" type="string" value="Boost"/> <!-- Boos, Standard, Express -->
+    </node>
+
+
+    <!--
+    <param name="robot_description" command="$(find xacro)/xacro $(find robotino_description)/urdf/robotino.urdf.xacro use_nominal_extrinsics:=$(arg sim)"/>
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="use_gui" value="false"/>
+      <rosparam param="source_list">["my_mover/joint_state"]</rosparam>
+    </node>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="ignore_timestamp" value="true"/>
+      <param name="publish_frequency" value="50"/>
+      <param name="use_tf_static" value="false" />
+    </node>
+
+
+    <include file="$(find robotino_description)/launch/robotino.launch"></include>
+
+
+    <rosparam command="load" file="$(find robotino_description)/urdf/joints.yaml" />
+
+        <node name="controller_spawner" pkg="controller_manager" type="spawner"
+           respawn="false" output="screen" ns="/rrbot"
+           args="revolute_joint_state_controller joint_position_controller">
+        </node>
+  -->
+
+
+</launch>

@@ -1,0 +1,228 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:property name="M_PI" value="3.14159"/>
+    <xacro:property name="M_SCALE" value="0.01"/>
+    <xacro:property name="PLATFORM_HEIGHT" value="0.58"/>
+    <xacro:property name="PLATFORM_RADIUS" value="0.22"/>
+    <!-- wheel -->
+    <xacro:macro name="wheel" params="parent name *origin *axis">
+        <link name="${name}_link">
+            <inertial>
+                <mass value="0.00001"/>
+                <origin xyz="0 0 0"/>
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </visual>
+        </link>
+        <gazebo reference="${name}_link">
+            <material>Gazebo/Yellow</material>
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <joint name="${name}_joint" type="continuous">
+            <xacro:insert_block name="origin" />
+            <xacro:insert_block name="axis"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+        <transmission name="${name}_joint_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${name}_joint">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_motor">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                <mechanicalReducation>1</mechanicalReducation>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+    <!-- laser sensor-->
+    <xacro:macro name="lasersensor" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+            <origin
+                xyz="-0.00056497 7.11770000114844E-09 0.018756"
+                rpy="0 0 0" />
+            <mass
+                value="0.15915" />
+            <inertia
+                ixx="7.2795244626149E-05"
+                ixy="8.59363271873857E-12"
+                ixz="-1.00192037963258E-06"
+                iyy="7.06968247556297E-05"
+                iyz="-1.1608849365102E-11"
+                izz="0.000102602650447107" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 -0.018756" rpy="1.5707963267949 0 0"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/lidar/meshes/lidar.STL" />
+                </geometry>
+                <material
+                    name="">
+                    <color rgba="0.64314 0.61569 0.6 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 -0.018756" rpy="1.5707963267949 0 0"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/lidar/meshes/lidar.STL" />
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="${name}_link">
+            <material>Gazebo/Black</material>
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <joint name="${name}_joint" type="fixed">
+            <xacro:insert_block name="origin"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+    </xacro:macro>
+    <!-- pantilt holder part 1-->
+    <xacro:macro name="pantilt" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+            <origin
+                xyz="-0.00076068 0.053384 -0.00086946"
+                rpy="0 0 0" />
+            <mass
+                value="1.7709" />
+            <inertia
+                ixx="0.022066"
+                ixy="0.00017957"
+                ixz="-1.0212E-05"
+                iyy="0.016545"
+                iyz="0.00019743"
+                izz="0.022127" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://robotino_description/pantiltholder/meshes/camerabase_link.STL" />
+                </geometry>
+                <material
+                    name="">
+                    <color rgba="0.79216 0.81961 0.93333 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://robotino_description/pantiltholder/meshes/camerabase_link.STL" />
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="${name}_link">
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <joint name="${name}_joint" type="fixed">
+            <xacro:insert_block name="origin"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+    </xacro:macro>
+    <!-- pantilt holder part 2-->
+    <xacro:macro name="pantiltring" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+            <origin
+                xyz="4.0968E-16 -0.015 9.18454765366783E-19"
+                rpy="0 0 0" />
+            <mass
+                value="0.094154" />
+            <inertia
+                ixx="0.001312241311471"
+                ixy="-6.9590790831882E-33"
+                ixz="-1.3339474659106E-34"
+                iyy="0.00261035959316777"
+                iyz="-7.94841947889434E-20"
+                izz="0.00131224131147099" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://robotino_description/ring/meshes/ring.STL" />
+                </geometry>
+                <material
+                    name="">
+                    <color rgba="0.79216 0.81961 0.93333 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://robotino_description/ring/meshes/ring.STL" />
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="${name}_link">
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <joint name="${name}_joint" type="fixed">
+            <xacro:insert_block name="origin"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+    </xacro:macro>
+    <!-- pantilt holder part 3-->
+    <xacro:macro name="cameraholder" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+            <origin
+                xyz="0.08119 -9.6149E-11 -0.006335"
+                rpy="0 0 0" />
+            <mass
+                value="0.061321" />
+            <inertia
+                ixx="1.6538E-06"
+                ixy="1.156E-14"
+                ixz="1.0178E-05"
+                iyy="7.7966E-05"
+                iyz="-6.9072E-14"
+                izz="7.6312E-05" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0.1785" rpy="0.050256 -1.5708 0" />
+                <geometry>
+                    <mesh filename="package://robotino_description/pantiltholder/meshes/cameraholder_Link.STL" />
+                </geometry>
+                <material
+                    name="">
+                    <color rgba="0.79216 0.81961 0.93333 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0.1785" rpy="0 -1.5708 0" />
+            <geometry>
+                <mesh filename="package://robotino_description/pantiltholder/meshes/cameraholder_Link.STL" />
+            </geometry>
+            </collision>
+        </link>
+        <joint name="${name}_joint" type="continuous">
+            <xacro:insert_block name="origin"/>
+            <origin
+                xyz="0 0 0.1785"
+                rpy="0.050256 -1.5708 0" />
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+            <axis xyz="0 0 1" />
+        </joint>
+        <transmission name="${name}_joint_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${name}_joint">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_motor">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                <mechanicalReducation>1</mechanicalReducation>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+
+</robot>

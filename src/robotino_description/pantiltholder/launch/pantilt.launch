@@ -1,0 +1,9 @@
+<launch>
+    <arg name="sim" default="true"/>
+        <param name="robot_description"
+               command="$(find xacro)/xacro.py $(find robot_description)/pantiltholder/urdf/pantilt.urdf"/>
+
+        <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen"
+              args="-urdf -param robot_description -model pantilt"/>
+
+</launch>

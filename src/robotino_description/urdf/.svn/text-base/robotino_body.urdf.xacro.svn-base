@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:property name="M_PI" value="3.14159"/>
+    <xacro:property name="M_SCALE" value="0.01"/>
+    <xacro:property name="BASE_RADIUS" value="0.18"/>
+    <xacro:property name="BASE_HEIGHT" value="0.05"/>
+    <xacro:property name="BASE_MASS" value="20"/>
+    <!-- robotino_body -->
+    <xacro:macro name="robotino_body">
+        <!-- base_link -->
+        <link name="base_link">
+            <inertial>
+                <mass value="${BASE_MASS}" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+                    iyy="1.0" iyz="0.0"
+                    izz="1.0" />
+            </inertial>
+            <visual>
+                <origin xyz="0.01 0 0" rpy="0 0 ${M_PI/2}"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/robotino_base.dae"
+                        scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 ${BASE_HEIGHT/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${BASE_RADIUS}" length="${BASE_HEIGHT}"/>
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="base_link">
+            <material>Gazebo/White</material>
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <!-- wheels -->
+        <wheel name="wheel0" parent="base_link">
+            <origin xyz="0.065 0.11 0.04" rpy="0 0 ${M_PI/3}"/>
+            <axis xyz="-1 0 0"/>
+        </wheel>
+        <wheel name="wheel1" parent="base_link">
+            <origin xyz="-0.13 0 0.04" rpy="0 0 0"/>
+            <axis xyz="1 0 0"/>
+        </wheel>
+        <wheel name="wheel2" parent="base_link">
+            <origin xyz="0.065 -0.11 0.04" rpy="0 0 -${M_PI/3}"/>
+            <axis xyz="-1 0 0"/>
+        </wheel>
+        <!-- others -->
+        <command_bridge name="command_bridge" parent="base_link">
+            <origin xyz="-0.05 0 0.13" rpy="0 0 ${M_PI/2}"/>
+        </command_bridge>
+        <anglebracketusb name="anglebracketusb" parent="base_link">
+            <origin xyz="0.008 0 0.137" rpy="0 0 ${M_PI/2}"/>
+        </anglebracketusb>
+        <!-- gazebo control -->
+        <gazebo>
+            <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+                <commandTopic>cmd_vel</commandTopic>
+                <odometryTopic>odom</odometryTopic>
+                <odometryFrame>odom</odometryFrame>
+                <odometryRate>20</odometryRate>
+                <robotBaseFrame>base_link</robotBaseFrame>
+            </plugin>
+            <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+        </gazebo>
+    </xacro:macro>
+</robot>

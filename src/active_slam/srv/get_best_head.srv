@@ -1,0 +1,12 @@
+#request
+geometry_msgs/Pose pose
+int32 fov_angle_deg
+int32 kind_cost
+float32 length
+float32 theta
+---
+#response
+float32 orientation
+
+
+

@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:property name="M_PI" value="3.14159"/>
+    <xacro:property name="M_SCALE" value="0.01"/>
+    <xacro:property name="BASE_RADIUS" value="0.18"/>
+    <xacro:property name="BASE_HEIGHT" value="0.05"/>
+    <xacro:property name="BASE_MASS" value="20"/>
+    <!-- robotino_body -->
+    <xacro:macro name="robotino_body">
+        <!-- base_link -->
+        <link name="base_link">
+            <inertial>
+                <mass value="${BASE_MASS}" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+                    iyy="1.0" iyz="0.0"
+                    izz="1.0" />
+            </inertial>
+            <visual>
+                <origin xyz="0.01 0 0" rpy="0 0 ${M_PI/2}"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/robotino_base.dae"
+                        scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 ${BASE_HEIGHT/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${BASE_RADIUS}" length="${BASE_HEIGHT}"/>
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="base_link">
+            <material>Gazebo/White</material>
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <!-- wheels -->
+        <wheel name="wheel0" parent="base_link">
+            <origin xyz="0.065 0.11 0.04" rpy="0 0 ${M_PI/3}"/>
+            <axis xyz="-1 0 0"/>
+        </wheel>
+        <wheel name="wheel1" parent="base_link">
+            <origin xyz="-0.13 0 0.04" rpy="0 0 0"/>
+            <axis xyz="1 0 0"/>
+        </wheel>
+        <wheel name="wheel2" parent="base_link">
+            <origin xyz="0.065 -0.11 0.04" rpy="0 0 -${M_PI/3}"/>
+            <axis xyz="-1 0 0"/>
+        </wheel>
+        <!-- others -->
+        <!-- lasersensor -->
+ 	    <lasersensor name="lasersensor" parent="base_link">
+            <origin xyz="0.0 0 0.26" rpy="0 0 0"/>
+        </lasersensor>
+
+        <!-- pantilt holder part 1-->
+        <xacro:pantilt name="pantilt" parent="base_link">
+            <origin xyz="0.0 0 0.33" rpy="0 0 0.5"/>
+        </xacro:pantilt>
+
+        <!-- pantilt holder part 2-->
+        <xacro:pantiltring name="pantiltring" parent="base_link">
+            <origin xyz="0.0 0 0.173" rpy="0 0 0"/>
+        </xacro:pantiltring>
+
+        <!-- pantilt holder part 3-->
+        <xacro:cameraholder name="cameraholder" parent="pantilt_link">
+            <origin xyz="0.0 0 0" rpy="0 0 0"/>
+        </xacro:cameraholder>
+
+
+        <!-- gazebo control -->
+        <!--
+        <gazebo reference="lasersensor_link">
+            <sensor type="ray" name="head_hokuyo_sensor">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>true</visualize>
+                <update_rate>20</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>300</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-3.14159</min_angle>
+                            <max_angle>+3.14159</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.10</min>
+                        <max>12.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                    </ray>
+                    <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+                        <topicName>robot/laser/scan</topicName>
+                        <robotNamespace>/</robotNamespace>
+                        <frameName>lasersensor_link</frameName>
+                    </plugin>
+            </sensor>
+        </gazebo>
+        
+        <gazebo>
+            <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+                <commandTopic>cmd_vel</commandTopic>
+                <odometryTopic>odom</odometryTopic>
+                <odometryFrame>odom</odometryFrame>
+                <odometryRate>20</odometryRate>
+                <robotBaseFrame>base_link</robotBaseFrame>
+            </plugin>
+        </gazebo>
+        <gazebo>
+            <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+             <robotNamespace>/rrbot</robotNamespace>
+            </plugin>
+        </gazebo>
+
+
+
+        <gazebo>
+            <plugin name="object_controller2" filename="libgazebo_ros_planar_move.so">
+                <commandTopic>camera/cmd_vel</commandTopic>
+                <odometryTopic>base_link</odometryTopic>
+                <odometryFrame>base_link</odometryFrame>
+                <odometryRate>20</odometryRate>
+                <robotBaseFrame>cameraholder_link</robotBaseFrame>
+            </plugin>
+            <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+        </gazebo>
+
+         -->
+    </xacro:macro>
+</robot>

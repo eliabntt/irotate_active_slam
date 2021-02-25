@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="sim" default="true"/>
+
+    <arg name="static_map" default="false"/>
+
+    <arg name="cmd_vel_topic" default="/cmd_vel"/> <!-- using twist mux -->
+    <arg name="odom_topic" default="/odometry/filtered"/>
+
+    <arg name="global_frame" default="map"/>
+    <arg name="odom_frame" default="odom"/>
+    <arg name="base_frame" default="base_link"/>
+
+    <arg name="base_global_planner" default="global_planner/GlobalPlanner"/> <!--  ompl_global_planner/OmplGlobalPlanner rrt_star/RRTPlan -->
+    <!--arg name="base_local_planner" default="teb_local_planner/TebLocalPlannerROS"/-->
+    <arg name="output" default="screen"/>
+
+
+    <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
+    <arg name="scanner" default="/robot/laser/scan" unless="$(arg sim)"/>
+
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" if="true">
+
+        <param name="base_global_planner" value="$(arg base_global_planner)"/>
+        <param name="GlobalPlanner/orientation_window_size" value="255"/>
+        <param name="GlobalPlanner/allow_unknown" value="false"/>
+        <param name="GlobalPlanner/track_unknown_space" value="true"/>
+        <param name="GlobalPlanner/lethal_cost" value="180"/>
+        <param name="GlobalPlanner/neutral_cost" value="50"/>
+        <param name="make_plan_clear_costmap" value="false"/>
+        <param name="GlobalPlanner/cost_factor" value="1"/>
+
+        <!-- observation sources located in costmap_common.yaml -->
+        <rosparam file="$(find robotino_simulations)/config/costmap_common.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find robotino_simulations)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+
+        <param name="global_costmap/obstacle_layer/laser/sensor_frame" value="lasersensor_link"/>
+        <param name="local_costmap/obstacle_layer/laser/sensor_frame" value="lasersensor_link"/>
+
+        <param name="global_costmap/obstacle_layer/laser/topic" value="$(arg scanner)"/>
+        <param name="local_costmap/obstacle_layer/laser/topic" value="$(arg scanner)"/>
+
+        <!-- local costmap, needs size -->
+        <rosparam file="$(find robotino_simulations)/config/costmap_local.yaml" command="load" ns="local_costmap" />
+        <param name="local_costmap/robot_base_frame" value="$(arg base_frame)"/>
+        <param name="local_costmap/global_frame" value="$(arg odom_frame)"/>
+
+        <!-- global costmap with laser, for odom_navigation -->
+        <rosparam file="$(find robotino_simulations)/config/costmap_global_laser.yaml" command="load" ns="global_costmap" unless="$(arg static_map)"/>
+        <param name="global_costmap/width" value="100.0" unless="$(arg static_map)"/>
+        <param name="global_costmap/height" value="100.0" unless="$(arg static_map)"/>
+        <param name="global_costmap/global_frame" value="$(arg global_frame)"/>
+        <param name="global_costmap/robot_base_frame" value="$(arg base_frame)"/>
+
+        <remap from="cmd_vel" to="$(arg cmd_vel_topic)" />
+        <remap from="odom" to="$(arg odom_topic)" />
+
+        <rosparam file="$(find robotino_simulations)/config/global_planner_params.yaml" command="load"/>
+<!--        <rosparam file="$(find robotino_simulations)/config/planner.yaml" command="load"/>-->
+    </node>
+
+    <node name="standalone_converter" pkg="costmap_converter" type="standalone_converter" output="screen" respawn="true">
+        <param name="converter_plugin" value="costmap_converter::CostmapToDynamicObstacles" />
+        <param name="costmap_topic" value="/move_base/local_costmap/costmap" />
+        <param name="odom_topic" value="$(arg odom_topic)" />
+        <param name="min_area" value="8"/>
+    </node>
+
+</launch>

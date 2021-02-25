@@ -1,0 +1,34 @@
+<?xml version ='1.0'?>
+<sdf version ='1.4'>
+  <world name='default'>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <model name="floor_grabcad">
+    <static>true</static>
+	  <link
+	    name="base_link">
+      <visual name="visual">
+	      <geometry>
+		<mesh>
+		  <uri>model://floor_grabcad/meshes/floor_grabcad.dae</uri>
+		</mesh>
+	      </geometry>
+	    </visual>
+      <collision name="collision">
+	      <geometry>
+		<mesh>
+		  <uri>model://floor_grabcad/meshes/floor_grabcad.dae</uri>
+		</mesh>
+	      </geometry>
+	    </collision>
+	  </link>
+  </model>
+
+  </world>
+</sdf>

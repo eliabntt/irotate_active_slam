@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package>
+  <name>robotino_msgs</name>
+  <version>0.1.0</version>
+  <description>The robotino_msgs package</description>
+  <maintainer email="v@rec.de">Christian Verbeek</maintainer>
+  <license>BSD</license>
+  <url type="website">http://wiki.ros.org/robotino_node</url>
+  <author email="v@rec.de">Christian Verbeek</author>
+  <!-- The *_depend tags are used to specify dependencies -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>std_msgs</run_depend>
+</package>

@@ -1,0 +1,11 @@
+#request
+active_slam/AvailablePaths paths
+int32 fov_angle_deg
+int32 kind_cost
+bool only_last
+---
+#response
+active_slam/SinglePath path
+
+
+

@@ -1,0 +1,3 @@
+uint32 position		# in encoder ticks
+uint32 velocity		# in ticks/s
+---

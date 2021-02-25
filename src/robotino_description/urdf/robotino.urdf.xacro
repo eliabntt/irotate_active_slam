@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot name="robotino" xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:include filename="$(find robotino_description)/urdf/robotino_body.urdf.xacro"/>
+    <xacro:include filename="$(find robotino_description)/urdf/robotino_parts.urdf.xacro"/>
+    <robotino_body/>
+
+
+    <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/>
+    <xacro:arg name="use_nominal_extrinsics" default="false"/>
+    <xacro:sensor_d435
+        parent="cameraholder_link">
+        <origin xyz="0 0 0.32" rpy="0 0 0"/>
+    </xacro:sensor_d435>
+
+</robot>

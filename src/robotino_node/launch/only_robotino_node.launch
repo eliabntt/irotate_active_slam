@@ -1,0 +1,13 @@
+<launch>
+    <!--arg name="hostname" default="10.25.191.176" /-->
+    <!-- <arg name="hostname" default="172.26.1.1" /> -->
+    <arg name="hostname" default="127.0.1.1" />
+    <node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
+        <param name="hostname" value="$(arg hostname)" />
+        <param name="max_linear_vel" value="0.1" />
+        <param name="min_linear_vel" value="0.01" />
+        <param name="max_angular_vel" value="1.0" />
+        <param name="min_angular_vel" value="0.01" />
+        <remap from="robotino_joint_states" to="joint_states" />
+	</node>
+</launch>

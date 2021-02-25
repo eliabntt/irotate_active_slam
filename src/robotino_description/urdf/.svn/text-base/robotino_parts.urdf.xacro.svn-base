@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:property name="M_PI" value="3.14159"/>
+    <xacro:property name="M_SCALE" value="0.01"/>
+    <xacro:property name="PLATFORM_HEIGHT" value="0.58"/>
+    <xacro:property name="PLATFORM_RADIUS" value="0.22"/>
+    <!-- wheel -->
+    <xacro:macro name="wheel" params="parent name *origin *axis">
+        <link name="${name}_link">
+            <inertial>
+                <mass value="0.00001"/>
+                <origin xyz="0 0 0"/>
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </visual>
+        </link>
+        <gazebo reference="${name}_link">
+            <material>Gazebo/Yellow</material>
+            <turnGravityOff>false</turnGravityOff>
+        </gazebo>
+        <joint name="${name}_joint" type="continuous">
+            <insert_block name="origin" />
+            <insert_block name="axis"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+        <transmission name="${name}_joint_trans">
+            <type>transmissio_interface/SimpleTransmission</type>
+            <joint name="${name}_joint"/>
+            <actuator name="${name}_motor">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReducation>1</mechanicalReducation>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+    <!-- command bridge -->
+    <xacro:macro name="command_bridge" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+                <mass value="0.00001"/>
+                <origin xyz="0 0 0"/>
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+            </inertial>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.25 0.11 0.16"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="${name}_joint" type="fixed">
+            <insert_block name="origin"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+    </xacro:macro>
+    <!-- angle bracket with USB hub -->
+    <xacro:macro name="anglebracketusb" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+                <mass value="0.00001"/>
+                <origin xyz="0 0 0"/>
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://robotino_description/meshes/parts/angle_bracket_usb_hub.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+                </geometry>
+            </visual>
+        </link>
+        <joint name="${name}_joint" type="fixed">
+            <insert_block name="origin"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+    </xacro:macro>
+    <!-- platform -->
+    <xacro:macro name="platform" params="parent name *origin">
+        <link name="${name}_link">
+            <inertial>
+                <mass value="0.00001"/>
+                <origin xyz="0 0 0"/>
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 ${PLATFORM_HEIGHT/2}"/>
+                <geometry>
+                    <cylinder radius="0.04" length="${PLATFORM_HEIGHT}"/>
+                </geometry>
+            </visual>
+            <visual>
+                <origin xyz="0 0 ${PLATFORM_HEIGHT}"/>
+                <geometry>
+                    <!-- actual length = 0.015 -->
+                    <cylinder radius="${PLATFORM_RADIUS}" length="0.02"/>
+                </geometry>
+            </visual>
+        </link>
+        <joint name="${name}_joint" type="fixed">
+            <insert_block name="origin"/>
+            <parent link="${parent}"/>
+            <child link="${name}_link"/>
+        </joint>
+    </xacro:macro>
+</robot>

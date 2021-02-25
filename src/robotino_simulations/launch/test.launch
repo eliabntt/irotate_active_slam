@@ -1,0 +1,31 @@
+<launch>
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+
+  <arg name="debug" default="false" />
+  <arg name="gui" default="false" />
+  <arg name="pause" default="false" />
+  <arg name="kitchen_dining" default="false"/>
+  <arg name="3dgems" default="true"/>
+  <arg name="world" default="$(find robotino_simulations)/worlds/office_grabcad.world" />
+
+
+  <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find robotino_simulations)/models"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="${GAZEBO_RESOURCE_PATH}:$(find robotino_simulations)/models"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/> 
+    <!-- more default parameters can be changed here 
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />-->
+    <arg name="paused" value="$(arg pause)" />
+    <arg name="use_sim_time" value="true" />
+  </include>
+
+  <!--Begin Robot 1-->
+
+
+   <include file="$(find robotino_description)/launch/robotino.launch">
+   </include>
+
+
+</launch>

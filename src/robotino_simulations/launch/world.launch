@@ -1,0 +1,29 @@
+<launch>
+    <arg name="sim" default="true"/>
+    <arg name="name" default="robotino_arena"/>
+    <arg name="world" default="$(find robotino_simulations)/worlds/$(arg name).world"/>
+    <arg name="debug" default="false"/>
+    <arg name="gui" default="true"/>
+    <arg name="paused" default="false"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+
+    <group if="$(arg sim)">
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="debug" value="$(arg debug)"/>
+            <arg name="gui" value="$(arg gui)"/>
+            <arg name="paused" value="$(arg paused)"/>
+            <arg name="use_sim_time" value="$(arg sim)"/>
+            <arg name="world_name" default="$(arg world)"/>
+        </include>
+
+	<!--Rviz-->
+<!--        <include file="$(find robotino_description)/launch/rviz.launch"/>-->
+    </group>
+
+    <include file="$(find robotino_description)/launch/robotino.launch">
+        <arg name="sim" value="$(arg sim)"/>
+        <arg name="x" value="$(arg x)"/>
+        <arg name="y" value="$(arg y)"/>
+    </include>
+</launch>

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors
+END
+camera.dae
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/camera.dae
+END
+robotparts.png
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/robotparts.png
+END
+asus_xtion_pro_live.dae
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/asus_xtion_pro_live.dae
+END
+kinect.dae
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/kinect.dae
+END
+hokuyo.dae
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/hokuyo.dae
+END
+kinect.tga
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/kinect.tga
+END
+kinect.jpg
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/kinect.jpg
+END
+asus_xtion_pro_live.png
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/!svn/ver/3087/robotino-ros-pkg/trunk/catkin-pkg/robotino_description/meshes/sensors/asus_xtion_pro_live.png
+END

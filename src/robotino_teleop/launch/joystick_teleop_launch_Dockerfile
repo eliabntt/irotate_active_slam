@@ -1,0 +1,2 @@
+RUN apt-get install kinetic-teleop-twist-keyboard
+COPY $(rospack find robotino_node)

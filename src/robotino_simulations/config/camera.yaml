@@ -1,0 +1,5 @@
+fov: 69.4
+depth: 4
+feat_based: false
+max_feat_dist: 10
+camera_height: 0.85

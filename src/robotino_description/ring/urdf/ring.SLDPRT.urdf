@@ -1,0 +1,43 @@
+<robot
+  name="ring.SLDPRT">
+  <link
+    name="ring">
+    <inertial>
+      <origin
+        xyz="4.0968E-16 -0.015 9.18454765366783E-19"
+        rpy="0 0 0" />
+      <mass
+        value="0.094154" />
+      <inertia
+        ixx="0.001312241311471"
+        ixy="-6.9590790831882E-33"
+        ixz="-1.3339474659106E-34"
+        iyy="0.00261035959316777"
+        iyz="-7.94841947889434E-20"
+        izz="0.00131224131147099" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5707963267949 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ring/meshes/ring.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5707963267949 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ring/meshes/ring.STL" />
+      </geometry>
+    </collision>
+  </link>
+</robot>

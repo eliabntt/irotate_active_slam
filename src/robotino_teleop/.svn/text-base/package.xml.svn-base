@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <name>robotino_teleop</name>
+  <version>0.1.0</version>
+  <description>The robotino_teleop package</description>
+  <maintainer email="suraj.nair@tum-create.edu.sg">Suraj Nair</maintainer>
+  <maintainer email="aravind.v@tum-create.edu.sg">Aravind V</maintainer>
+  <license>BSD</license>
+  <url type="website">http://wiki.ros.org/robotino_teleop</url>
+  <author email="verbeek@servicerobotics.eu">Christian Verbeek</author>
+  <!-- The *_depend tags are used to specify dependencies -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>robotino_node</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>robotino_node</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+</package>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot name="robotino" xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:include filename="$(find robotino_description)/urdf/robotino_body.urdf.xacro"/>
+    <xacro:include filename="$(find robotino_description)/urdf/robotino_parts.urdf.xacro"/>
+    <robotino_body/>
+    <!-- add platform -->
+    <platform name="platform" parent="base_link">
+        <origin xyz="0.0 0.0 0.13" rpy="0 0 0"/>
+    </platform>
+</robot>

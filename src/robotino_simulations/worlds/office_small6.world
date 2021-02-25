@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+	
+    <model name="office_small6">
+    <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://office_small6/meshes/office_small6.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="collision">
+	<geometry>
+          <mesh>
+            <uri>model://office_small6/meshes/office_small6.dae</uri>
+          </mesh>
+	</geometry>
+      </collision>
+    </link>
+  </model>
+
+  </world>
+</sdf>
+

@@ -1,0 +1,531 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+    <world name="default">
+
+        <include>
+            <uri>model://ground_plane</uri>
+        </include>
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <physics name='default_physics' default='0' type='ode'>
+            <ode>
+                <solver>
+                    <type>quick</type>
+                    <iters>70</iters>
+                    <sor>1.3</sor>
+                    <use_dynamic_moi_rescaling>0</use_dynamic_moi_rescaling>
+                </solver>
+                <constraints>
+                    <cfm>0</cfm>
+                    <erp>0.2</erp>
+                    <contact_max_correcting_vel>100</contact_max_correcting_vel>
+                    <contact_surface_layer>0.01</contact_surface_layer>
+                </constraints>
+            </ode>
+            <real_time_update_rate>100</real_time_update_rate>
+            <real_time_factor>1</real_time_factor>
+            <max_step_size>0.01</max_step_size>
+        </physics>
+
+        <model name="cafe">
+            <static>true</static>
+            <link name="link">
+                <visual name="visual">
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe/meshes/cafe.dae</uri>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <collision name="collision">
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe/meshes/cafe.dae</uri>
+                        </mesh>
+                    </geometry>
+                </collision>
+
+                <self_collide>0</self_collide>
+                <kinematic>0</kinematic>
+                <gravity>1</gravity>
+                <!-- todo add strategic table -->
+                <include>
+                    <uri>model://ground_plane</uri>
+                </include>
+            </link>
+        </model>
+        <model name="plant">
+            <pose>-3.7 -1.2 0.18 0 0 0</pose>
+            <static>true</static>
+            <link name="link">
+                <visual name="visual">
+                    <geometry>
+                        <mesh>
+                            <uri>model://plant/plant.dae</uri>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <collision name="collision">
+                    <geometry>
+                        <mesh>
+                            <uri>model://plant/plant.dae</uri>
+                        </mesh>
+                    </geometry>
+                </collision>
+            </link>
+        </model>
+        <model name="plant_1">
+            <pose>-4.7 -10.2 0.18 0 0 0</pose>
+            <static>true</static>
+            <link name="link">
+                <visual name="visual">
+                    <geometry>
+                        <mesh>
+                            <uri>model://plant/plant.dae</uri>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <collision name="collision">
+                    <geometry>
+                        <mesh>
+                            <uri>model://plant/plant.dae</uri>
+                        </mesh>
+                    </geometry>
+                </collision>
+            </link>
+        </model>
+
+        <model name='door'>
+            <static>true</static>
+            <include>
+                <uri>model://door_3d</uri>
+            </include>
+            <pose frame=''>-3.64 -10.91 0 0 -0 0</pose>
+            <scale>1 1 1.2</scale>
+        </model>
+
+        <model name='cafe_table'>
+            <static>1</static>
+            <link name='link'>
+
+                <visual name='visual'>
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe_table/meshes/cafe_table.dae</uri>
+                            <scale>1 1 1</scale>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <collision name="collision">
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe_table/meshes/cafe_table.dae</uri>
+                            <scale>1 1 1</scale>
+                        </mesh>
+                    </geometry>
+                </collision>
+                <self_collide>0</self_collide>
+                <kinematic>0</kinematic>
+                <gravity>1</gravity>
+            </link>
+            <pose frame=''>1.702688 -7.28634 0 0 -0 0</pose>
+        </model>
+
+        <model name='cafe_table_0'>
+            <static>1</static>
+            <link name='link'>
+                <collision name='surface'>
+                    <pose frame=''>0 0 0.755 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.913 0.913 0.04</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <collision name='column'>
+                    <pose frame=''>0 0 0.37 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.042 0.042 0.74</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <collision name='base'>
+                    <pose frame=''>0 0 0.02 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.56 0.56 0.04</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <visual name='visual'>
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe_table/meshes/cafe_table.dae</uri>
+                            <scale>1 1 1</scale>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <self_collide>0</self_collide>
+                <kinematic>0</kinematic>
+                <gravity>1</gravity>
+            </link>
+            <pose frame=''>-1.402688 -4.28634 0 0 -0 0</pose>
+        </model>
+
+        <model name='cafe_table_0_clone'>
+            <static>1</static>
+            <link name='link'>
+                <collision name='surface'>
+                    <pose frame=''>0 0 0.755 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.913 0.913 0.04</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <collision name='column'>
+                    <pose frame=''>0 0 0.37 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.042 0.042 0.74</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <collision name='base'>
+                    <pose frame=''>0 0 0.02 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.56 0.56 0.04</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <visual name='visual'>
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe_table/meshes/cafe_table.dae</uri>
+                            <scale>1 1 1</scale>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <self_collide>0</self_collide>
+                <kinematic>0</kinematic>
+                <gravity>1</gravity>
+            </link>
+            <pose frame=''>1.702688 -4.28634 0 0 -0 0</pose>
+        </model>
+
+        <model name='cafe_table_0_clone_0'>
+            <static>1</static>
+            <link name='link'>
+                <collision name='surface'>
+                    <pose frame=''>0 0 0.755 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.913 0.913 0.04</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <collision name='column'>
+                    <pose frame=''>0 0 0.37 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.042 0.042 0.74</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <collision name='base'>
+                    <pose frame=''>0 0 0.02 0 -0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>0.56 0.56 0.04</size>
+                        </box>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <visual name='visual'>
+                    <geometry>
+                        <mesh>
+                            <uri>model://cafe_table/meshes/cafe_table.dae</uri>
+                            <scale>1 1 1</scale>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <self_collide>0</self_collide>
+                <kinematic>0</kinematic>
+                <gravity>1</gravity>
+            </link>
+            <pose frame=''>-1.402688 -7.28634 0 0 -0 0</pose>
+        </model>
+
+
+        <model name='ChairA_01_001'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>-0.73 -7.28634 0.189 1e-06 -0 0</pose>
+        </model>
+        <model name='ChairA_01_002'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>-2.15 -7.28634 0.189 1e-06 -0 -3.141</pose>
+        </model>
+        <model name='ChairA_01_001_clone'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>-0.73 -4.28634 0.189 1e-06 -0 0</pose>
+        </model>
+        <model name='ChairA_01_002_clone'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>-2.15 -4.28634 0.189 1e-06 -0 -3.141</pose>
+        </model>
+        <model name='ChairA_01_003'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>2.35 -4.28634 0.01 0 -0 0</pose>
+        </model>
+        <model name='ChairA_01_004'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>0.95 -4.28634 0 0 -0 -3.1415</pose>
+        </model>
+        <model name='ChairA_01_003_clone'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>2.35 -7.28634 0.01 0 -0 0</pose>
+        </model>
+        <model name='ChairA_01_004_clone'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_ChairA_01</uri>
+            </include>
+            <pose frame=''>0.95 -7.28634 0 0 -0 -3.1415</pose>
+        </model>
+        <model name='tv_table'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_TVCabinet_01</uri>
+            </include>
+            <pose frame=''>3.95 3.67 0 0 -0 -3.1415</pose>
+        </model>
+
+        <model name='tv'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_TV_02</uri>
+            </include>
+            <pose frame=''>3.85 3.82 0.52 0 -0 -0</pose>
+        </model>
+
+        <model name='mug'>
+            <static>true</static>
+            <include>
+                <uri>model://mug_beer</uri>
+            </include>
+            <pose frame=''>-0.9 4.5 1.35 0 -0 -0</pose>
+        </model>
+        <model name='mug1'>
+            <static>true</static>
+            <include>
+                <uri>model://mug_beer</uri>
+            </include>
+            <pose frame=''>-1.04 5.19 1.35 0 -0 -0</pose>
+        </model>
+        <model name='mug2'>
+            <static>true</static>
+            <include>
+                <uri>model://mug_beer</uri>
+            </include>
+            <pose frame=''>-1.1 5.9 1.35 0 -0 -0</pose>
+        </model>
+
+        <model name='coffee'>
+            <static>true</static>
+            <include>
+                <uri>model://coffee_machine</uri>
+            </include>
+            <pose frame=''>-4.531 5.73 1.35 0 -0 -0</pose>
+        </model>
+
+        <model name='table_lamp'>
+            <static>true</static>
+            <include>
+                <uri>model://lamp_table_small</uri>
+            </include>
+            <pose frame=''>1.678 -7.26634 0.7837 0 -0 -3.1415</pose>
+        </model>
+
+        <model name='table_pc'>
+            <static>true</static>
+            <include>
+                <uri>model://laptop_pc_1</uri>
+            </include>
+            <pose frame=''>-1.678 -4.26634 0.7737 0 -0 -2.1415</pose>
+        </model>
+
+        <model name='tray'>
+            <static>true</static>
+            <include>
+                <uri>model://tray</uri>
+            </include>
+            <pose frame=''>1.84 -3.96 0.8 0 -0 -2.1415</pose>
+        </model>
+
+        <model name='sofa_1'>
+            <static>true</static>
+            <include>
+                <uri>model://sofa_set_1</uri>
+            </include>
+            <pose frame=''>3.764 -0.76 0.36 0 -0 -1.57</pose>
+        </model>
+
+        <model name='sofa_2'>
+            <static>true</static>
+            <include>
+                <uri>model://sofa_set_3</uri>
+            </include>
+            <pose frame=''>2.184 4 0.27 0 -0 1.57</pose>
+        </model>
+
+        <model name='trash'>
+            <static>true</static>
+            <include>
+                <uri>model://trash_bin</uri>
+            </include>
+            <pose frame=''>3.97 2.0 0.25 0 -0 0</pose>
+        </model>
+
+    </world>
+</sdf>
+
