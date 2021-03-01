@@ -77,7 +77,10 @@ To generate evaluation files you need to edit the following files `map.sh`, `bac
 - `convert_map.cpp:L12` is the destination folder of the map converted to a txt file.
 - `calculate_map_error.cpp:L10-14` are the folders/files used to generate the results and read the (gt)map
 - `map.sh` will be then use to create the map, compute the results and generate the log files from rtabmap database
-- `back.sh` will run the trajectory evaluation scripts and `map.sh`
+- `back.sh` will run the trajectory evaluation scripts and `map.sh` and move all the files to the desired folder
+
+The groundtruths for the considered environments (generated with the pgm_map_creator) are in `src/pgm_map_creator/maps`.
+
 
 The suggested folder structure is as follow (since this is the one used in scripts and notebook):
 - Test/
@@ -104,9 +107,19 @@ The python notebook can then be used to generate paper-like plots and results.
 
 The BAC score will be computed inside the notebook.
 
+The notebook requires the "poses.g2o" file for each run. This was initially used to gather the evolution of link uncertainties. Even if it's not directly useful I suggest to still export this via `rtabmap-databaseViewer` tool by opening the database and doing `File>export poses> g2o` so that you can double-check the  correctness of every run.
+
+### Included external packages / sources
+- [pgm_map_creator](https://github.com/hyfan1116/pgm_map_creator)
+- [rtabmap_ros](https://github.com/introlab/rtabmap-ros): edited in a couple of source files and froze
+- evaluation of the map and frontier extractor from [crowdbot_active_slam](https://github.com/ethz-asl/crowdbot_active_slam). 
+  
+    Frontier extractor has been edited to obtain more frontiers.
+- trajectory evaluation from [TUM](https://vision.in.tum.de/data/datasets/rgbd-dataset/tools)
+- realsense-ros and realsense-gazebo-plugin folders. Note that those have slightly edited tfs. This won't impact results you can [probably] freely update those.
 ## Authors
 
-* **Elia Bonetto** 
+**Elia Bonetto** 
 ## License
 
 This project is licensed under
