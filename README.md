@@ -109,6 +109,7 @@ The BAC score will be computed inside the notebook.
 
 The notebook requires the "poses.g2o" file for each run. This was initially used to gather the evolution of link uncertainties. Even if it's not directly useful I suggest to still export this via `rtabmap-databaseViewer` tool by opening the database and doing `File>export poses> g2o` so that you can double-check the  correctness of every run.
 
+**NOTE** Most probably you will need to edit the notebook based on your need: e.g. length of the experiments, bucketing and other things are managed inside.
 ### Included external packages / sources
 - [pgm_map_creator](https://github.com/hyfan1116/pgm_map_creator)
 - [rtabmap_ros](https://github.com/introlab/rtabmap-ros): edited in a couple of source files and froze
