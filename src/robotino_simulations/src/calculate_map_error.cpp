@@ -105,9 +105,9 @@ int main(int argc, char **argv)
         result_file << "Number of known test cells, while unknown in ref map: " << j << std::endl;
         result_file << "score for known test cells, while unkown in ref map: " << over_ref_score << std::endl;
         result_file << "Number of known ref cells, while unknown in test map: " << k << std::endl;
-        result_file << "BAC score " << 1/2.0*(correct_free/total_free + correct_occ/total_occ) << std::endl;
-        result_file << "BAC correct_free_ratio " << (correct_free/total_free) << std::endl;
-        result_file << "BAC correct_occ_ratio " << (correct_occ/total_occ) << std::endl;
+//        result_file << "BAC score " << 1/2.0*(correct_free/total_free + correct_occ/total_occ) << std::endl;
+//        result_file << "BAC correct_free_ratio " << (correct_free/total_free) << std::endl;
+//        result_file << "BAC correct_occ_ratio " << (correct_occ/total_occ) << std::endl;
 
         // Close file
         result_file.close();

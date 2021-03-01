@@ -27,9 +27,6 @@
             <arg name="use_sim_time" value="$(arg sim)"/>
             <arg name="world_name" default="$(arg world)"/>
         </include>
-
-	<!--Rviz-->
-<!--        <include file="$(find robotino_description)/launch/rviz.launch"/>-->
     </group>
 
     <include file="$(find robotino_description)/launch/robotino.launch">
