@@ -1,12 +1,13 @@
 <launch>
+    <arg name="weighted_avg" default="true"/>
     <node name="frontier_exploration" pkg="active_slam"
           type="frontier_exploration_node" output="log" respawn="true">
         <param name="frontier_size" type="int" value="5"/>
     </node>
-    <node name="map_extract" pkg="active_slam" type="map_extract_node" output="log" respawn="true">
+    <node name="map_extract" pkg="active_slam" type="map_extract_node" output="screen" respawn="true">
         <rosparam file="$(find robotino_simulations)/config/camera.yaml" command="load"/>
         <param name="prob_threshold_free"  value="70"/>
         <param name="debug" value="false"/>
-        <param name="weighted_avg" value="true"/>
+        <param name="weighted_avg" value="$(arg weighted_avg)"/>
     </node>
 </launch>
