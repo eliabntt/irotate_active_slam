@@ -1,9 +1,6 @@
 #!bin/bash
-
-cd ~/active-rgbd-slam/ros_slam/src/robotino_simulations/models
-mkdir 3dgems_temp
-
-cd ~/active-rgbd-slam/ros_slam/src/robotino_simulations/models/3dgems_temp
+mkdir ./models
+cd ./models
 
 wget -O decoration.tar.gz data.nvision2.eecs.yorku.ca/3DGEMS/data/decoration.tar.gz && tar -xvf decoration.tar.gz
 wget -O earthquake.tar.gz data.nvision2.eecs.yorku.ca/3DGEMS/data/earthquake.tar.gz && tar -xvf earthquake.tar.gz
@@ -49,16 +46,7 @@ rm -r shapes
 rm -r stationery
 rm -r tools
 
-
-cd ~/active-rgbd-slam/ros_slam/src/robotino_simulations/models
-
-mv ~/active-rgbd-slam/ros_slam/src/robotino_simulations/models/3dgems_temp ~/.gazebo/models/
-
-#cp ./kitchen_dining ~/.gazebo/models/kitchen_dining/ -r
-
-
-
-
-
-
-
+mv ./* ~/.gazebo/models/
+cp plant/  ~/.gazebo/models/ -r
+cd ..
+rm -r models
