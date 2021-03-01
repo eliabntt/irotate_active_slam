@@ -14,10 +14,10 @@ There are many prerequisites. Please follow instructions on the linked webpages 
 - Install ros-melodic-desktop-full following [this](http://wiki.ros.org/melodic/Installation/Ubuntu)
 - Install ros prerequisites `sh ros-req.sh`
 - (For the notebook visualization) Install python3, pip3 and virtualenv
-    - create a virtualenv 
-    - Install [requirements.txt - **missing url**]()
-    - Install “jupyter labextension install jupyterlab-plotly” (if nodejs gives problems run `curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash – && sudo apt-get install nodejs`)
-- Install ACADO from [sources](https://acado.github.io/install_linux.html) and follow [this **missing link**]() README
+    - create a virtualenv with python3.6
+    - Install in the virtualenv with `pip install -r requirements.txt` the required [packages](https://github.com/eliabntt/active_v_slam/blob/master/requirements.txt)
+    - Run `jupyter labextension install jupyterlab-plotly` (if nodejs gives problems run `curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash – && sudo apt-get install nodejs`)
+- Install ACADO from [sources](https://acado.github.io/install_linux.html) and follow [this](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_mpc/solver_made_from_cpp/README.md) README
 - Install [GTSAM4.x](https://gtsam.org/get_started/) either from sources or APT. **NOTE** be sure that march_native is off. If problems arise during the compilation of RTABMap check [this](https://github.com/introlab/rtabmap_ros/issues/291)
 - Install [libpointmatcher](https://github.com/ethz-asl/libpointmatcher/blob/master/doc/CompilationUbuntu.md)
 - RTABMap:
