@@ -1,0 +1,2 @@
+time stamp
+bool[] values
