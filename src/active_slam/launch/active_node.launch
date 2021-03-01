@@ -7,5 +7,6 @@
         <rosparam file="$(find robotino_simulations)/config/camera.yaml" command="load"/>
         <param name="prob_threshold_free"  value="70"/>
         <param name="debug" value="false"/>
+        <param name="weighted_avg" value="true"/>
     </node>
 </launch>

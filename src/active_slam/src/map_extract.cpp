@@ -223,7 +223,7 @@ void MapExtract::initParams() {
     private_nh_.param<int>("fov", fov_camera_deg_, 86);
     private_nh_.param<bool>("debug", debug_, false);
     private_nh_.param<double>("min_dist", min_distance_, 0.5);
-
+    private_nh_.param<bool>("weighted_avg",weighted_avg, true);
 
 //Publisher
     if (debug_) {
@@ -1080,12 +1080,12 @@ bool MapExtract::getBestPathServiceCallback(active_slam::get_best_path::Request 
         for (auto kind_considered : all_costs) {
             if (debug_ || kind_considered == wanted_kind) {
                 ROS_INFO_STREAM("FOR kind of cost " << kind_considered << " we have: ");
+                if (weighted_avg){
+                    tot_utility[kind_considered]/= total_weight;
+                    entropy[kind_considered] /= total_weight;
+                }
                 ROS_INFO_STREAM("We get " << tot_utility[kind_considered] << " utility");
-//                ROS_INFO_STREAM("We get " << tot_utility[kind_considered]/ total_weight << " utility");
-//                entropy[kind_considered] /= total_weight;
                 ROS_INFO_STREAM("We get " << entropy[kind_considered] << " entropy \n");
-//                if (tot_utility[kind_considered] / (total_weight) > max_utility[kind_considered]) {
-//                    max_utility[kind_considered] = tot_utility[kind_considered] / (total_weight);
                 if (tot_utility[kind_considered] > max_utility[kind_considered]) {
                     max_utility[kind_considered] = tot_utility[kind_considered];
                     max_entropy[kind_considered] = entropy[kind_considered];

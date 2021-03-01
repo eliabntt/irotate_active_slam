@@ -115,9 +115,8 @@ private:
     // Rosparam         ;
     double radius_camera_, min_distance_, fov_camera_rad;
     int prob_threshold_free_, kind_cost_;
-    bool is_zero_inside;
+    bool is_zero_inside,debug_, weighted_avg;
     int fov_camera_deg_;
-    bool debug_;
 
     float map_resolution_, x_origin, y_origin;
     int map_width_, map_height_;
