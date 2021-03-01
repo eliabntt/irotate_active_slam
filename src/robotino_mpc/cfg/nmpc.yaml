@@ -10,3 +10,4 @@ cmd_vel_robot: "/cmd_vel"
 cmd_vel_cam: "/camera/cmd_vel"
 traj: "/traj"
 rob_state: "/mpc/state"
+sim: True
