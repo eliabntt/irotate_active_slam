@@ -10,6 +10,7 @@
     <arg name="compressed" default="false"/>
     <arg name="image_transport" default="compressed"/>
     <arg name="robust" default="false"/>
+    <arg name="gt" default=""/>
 
     <!-- Arguments for rtabmap and other nodes -->
     <arg name="camera_info_topic" default="/camera2/color/camera_info"/>  <!-- /camera_info -->
@@ -23,6 +24,8 @@
     <arg name="max_depth" default="4"/> <!-- max features depth-->
     <arg name="min_depth" default="0.4"/> <!-- min features depth-->
     <arg name="detector" default="2"/>
+
+
     <group ns="rtabmap">
 
         <arg name="use_sim_time" default="true"/>
@@ -49,22 +52,14 @@
         </node>
 
 
-        <!--node pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="log">
-            <param name="subscribe_rgbd" type="bool" value="false"/>
-            <param name="frame_id" type="string" value="base_link"/>
-            <remap from="rgb/image" to="$(arg rgb_topic)"/>
-            <remap from="depth/image" to="$(arg depth_topic)"/>
-            <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
-            <param name="queue_size" value="30"/>
-            <param name="publish_tf" value="false"/>
-        </node-->
-
         <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="$(arg delete)">
             <param name="Reg/Strategy" type="int"
                    value="2"/>            <!-- 0=Visual, 1=ICP (1 requires scan)--> <!-- todo try 2, 0 ,1 -->
 
-            <param name="ground_truth_frame_id" value="world"/>
-            <param name="ground_truth_base_frame_id" value="base_footprint_gt"/>
+            <param if="$(arg gt)" name="ground_truth_frame_id" value="world"/>
+            <param unless="$(arg gt)" name="ground_truth_frame_id" value=""/>
+            <param if="$(arg gt)" name="ground_truth_base_frame_id" value="base_footprint_gt"/>
+            <param unless="$(arg gt)" name="ground_truth_base_frame_id" value=""/>
 
             <param name="queue_size" value="30"/>
 

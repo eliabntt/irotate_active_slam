@@ -3,9 +3,11 @@
     <arg name="only_last_set" default="false"/>
     <arg name="mid_optimizer" default="true"/>
     <arg name="pre_fix" default="false"/>
+    <arg name="sim" default="true"/>
     <param name="kind_cost" type="int" value="$(arg kind)"/>
     <param name="only_last_set" type="bool" value="$(arg only_last_set)"/>
     <param name="mid_optimizer" type="bool" value="$(arg mid_optimizer)"/>
     <param name="pre_fix" type="bool" value="$(arg pre_fix)"/>
+    <param name="is_sim" type="bool" value="$(arg sim)"/>
     <node name="robotino_fsm" pkg="robotino_fsm" type="robotino_fsm_node" respawn="false" clear_params="true" output="screen"/>
 </launch>

@@ -7,6 +7,17 @@
     <arg name="paused" default="false"/>
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
+    <arg name="gt" default="$(arg sim)"/>
+    <arg name="gt_state" default="ground_truth/state"/>
+    <arg name="base_gt" default="base_footprint_gt"/>
+
+    <group if="$(arg gt)">
+        <node pkg="rtabmap_ros" type="odom_msg_to_tf" name="odom_msg_to_tf" output="screen">
+            <remap from="odom" to="$(arg gt_state)"/>
+            <param name="frame_id" value="$(arg base_gt)"/>
+        </node>
+        <node pkg="tf" type="static_transform_publisher" name="world_map_tf"  args="0 0 0 0 0 0 world map 100" output="screen"/>
+    </group>
 
     <group if="$(arg sim)">
         <include file="$(find gazebo_ros)/launch/empty_world.launch">

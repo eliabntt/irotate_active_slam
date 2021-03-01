@@ -8,6 +8,7 @@
     <arg name="db" default="rtabmap.db"/>
     <arg name="hostname" default="10.0.0.1"/>
     <arg name="explore" default="false"/>
+    <arg name="gt" default="$(arg sim)"/>
 
     <group unless="$(arg sim)">
         <node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
@@ -59,6 +60,10 @@
         <arg name="cuda" value="$(arg cuda)"/>
         <arg name="database_path" value="$(arg db)"/>
         <arg name="compressed" value="$(arg remote)"/>
+        <arg name="gt" value="$(arg gt)"/>
     </include>
 
+    <include file="$(find robotino_simulations)/launch/move_base.launch">
+            <arg name="sim" value="$(arg sim)"/>
+    </include>
 </launch>
