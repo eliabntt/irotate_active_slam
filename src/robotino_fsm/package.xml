@@ -4,13 +4,10 @@
   <version>0.0.0</version>
   <description>The robotino finite state machine package</description>
 
-  <maintainer email="elia.bonetto@tuebingen.mpg.de">Elia Bonetto</maintainer>
 
-  <license>TODO</license>
-
-  <!-- Example: -->
   <author email="elia.bonetto@tuebingen.mpg.de">Elia Bonetto</author>
-
+  <maintainer email="elia.bonetto@tuebingen.mpg.de">Elia Bonetto</maintainer>
+  <license>GPLv3</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
