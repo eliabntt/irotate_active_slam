@@ -138,7 +138,7 @@ The notebook requires the "poses.g2o" file for each run. This was initially used
 
 **NOTE** Most probably you will need to edit the notebook based on your need: e.g. length of the experiments, bucketing and other things are managed inside.
 
-### Included external packages / sources
+## Included external packages / sources
 - [pgm_map_creator](https://github.com/hyfan1116/pgm_map_creator)
 - [rtabmap_ros](https://github.com/introlab/rtabmap-ros): edited in a couple of source files and froze
 - evaluation of the map and frontier extractor from [crowdbot_active_slam](https://github.com/ethz-asl/crowdbot_active_slam). 
