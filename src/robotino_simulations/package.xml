@@ -4,16 +4,9 @@
   <version>0.0.0</version>
   <description>The robotino_simulations package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="mpabst@todo.todo">mpabst</maintainer>
-
-
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <author email="elia.bonetto@tuebingen.mpg.de">Elia Bonetto</author>
+  <maintainer email="elia.bonetto@tuebingen.mpg.de">Elia Bonetto</maintainer>
+  <license>GPLv3</license>
 
 
   <depend>roscpp</depend>
