@@ -1,5 +1,10 @@
 # iRotate: Active Visual SLAM for Omnidirectional Robots
+
 This repository contains the code of iRotate, an active V-SLAM method presented in.
+This project has been developed within [Robot Perception Group](https://ps.is.tue.mpg.de/research_fields/robot-perception-group) at the Max Planck Institute for Intelligent Systems, Tübingen.
+
+
+![](https://user-images.githubusercontent.com/19806758/109616778-dca1b380-7b35-11eb-8071-be8229fbb127.png)
 
 ## Getting Started
 
@@ -36,9 +41,9 @@ There are many prerequisites. Please follow instructions on the linked webpages 
 ______
 - **ONLY REAL ROBOT**: 
     - Install [librealsense](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md)
-    - robotino's packages: robotino-dev rec-rpc and robotino-api2 from [here](https://wiki.openrobotino.org/index.php?title=Robotino_OS)
+    - robotino's packages: rec-rpc robotino-dev and robotino-api2 from [here](https://wiki.openrobotino.org/index.php?title=Robotino_OS) in this order
     - REMOVE the CATKIN_IGNORE from `src/realsense-ros/realsense2-camera`, `src/robotino-node`, `src/robotino-rest-node`, `src/robotino-teleop`
-    - **Needs testing ** `mkdir -p ./devel/include/robotino_msgs && cp robotino_specific/robotino_msgs/*.h ./devel/include/robotino_msgs`
+    - do `catkin_make` again. If error occurs because of missing robotino's msg files you can run `mkdir -p ./devel/include/robotino_msgs && cp robotino_specific/robotino_msgs/*.h ./devel/include/robotino_msgs`
 _______
 ## How to run
 Since you will need at least 5 terminals to run this project my suggestion is to use a package like _terminator_.
@@ -86,6 +91,15 @@ If you want to test this algorithm on your own system there are some changes you
 - Other things like `move_base` setting
 
 ## Evaluation
+
+### Reproducing results
+Results achieved in real world experiments always depend on the hardware in question as well as environmental factors on the day of experiment. However our simulated experiments results were averaged over a large number of identical experiments and should be reproducible by third parties.
+
+We focused on AWS's Small House and an edited version of the Gazebo's Cafè environments. Tests results are averaged among 20 tries of 10 minutes each with the same starting location ([-2,0] and [0,0] respectively).
+
+No changes to the code are necessary.
+
+### Generate evaluation files and analyze the results
 To generate evaluation files you need to edit the following files `map.sh`, `back.sh`, `robotino_simulations/src/convert_map.cpp` and `robotino_simulations/src/calculate_map_error.cpp` such that folders are correct for your system.
 - `convert_map.cpp:L12` is the destination folder of the map converted to a txt file.
 - `calculate_map_error.cpp:L10-14` are the folders/files used to generate the results and read the (gt)map
@@ -123,6 +137,7 @@ The BAC score will be computed inside the notebook.
 The notebook requires the "poses.g2o" file for each run. This was initially used to gather the evolution of link uncertainties. Even if it's not directly useful I suggest to still export this via `rtabmap-databaseViewer` tool by opening the database and doing `File>export poses> g2o` so that you can double-check the  correctness of every run.
 
 **NOTE** Most probably you will need to edit the notebook based on your need: e.g. length of the experiments, bucketing and other things are managed inside.
+
 ### Included external packages / sources
 - [pgm_map_creator](https://github.com/hyfan1116/pgm_map_creator)
 - [rtabmap_ros](https://github.com/introlab/rtabmap-ros): edited in a couple of source files and froze
@@ -131,9 +146,11 @@ The notebook requires the "poses.g2o" file for each run. This was initially used
     Frontier extractor has been edited to obtain more frontiers.
 - trajectory evaluation from [TUM](https://vision.in.tum.de/data/datasets/rgbd-dataset/tools)
 - realsense-ros and realsense-gazebo-plugin folders. Note that those have slightly edited tfs. This won't impact results you can [probably] freely update those.
-## Authors
 
-**Elia Bonetto** 
 ## License
 
-This project is licensed under
+All Code in this repository - unless otherwise stated in local license or code headers is
+
+Copyright 2021 Max Planck Institute for Intelligent Systems, Tübingen.
+
+Licensed under the terms of the GNU General Public Licence (GPL) v3 or higher. See: https://www.gnu.org/licenses/gpl-3.0.en.html
