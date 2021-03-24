@@ -140,9 +140,11 @@ void nlmpc::getTarget(const nav_msgs::Odometry::ConstPtr &waypoint) {
 
     targetPose(0) = waypoint->pose.pose.position.x;
     targetPose(1) = waypoint->pose.pose.position.y;
+
     double r, p, y;
 
     getRPY(waypoint->pose.pose, r, p, y);
+
 
     double y2 = y > 0 ? std::fmod(y - 2 * M_PI, 2 * M_PI) : std::fmod(y + 2 * M_PI, 2 * M_PI);
 
@@ -217,7 +219,7 @@ void nlmpc::initParam() {
     }
 
     Eigen::Map<Eigen::Matrix<double, ACADO_NOD, ACADO_N + 1 >>(const_cast<double *>(acadoVariables.od)) =
-            online_data.transpose();
+                                                        online_data.transpose();
 
     if (verbose) {
         std::cout << "acado online data: " << std::endl << online_data << std::endl;
@@ -321,13 +323,13 @@ void nlmpc::invalidTimeout() {
 
 void nlmpc::applyParam() {
     W.block(0, 0, 4, 4) = pen_vel.asDiagonal(); // absolute x and y veocities +
-    W.block(4, 4, 3, 3) = pen_pos.asDiagonal();
-    W.block(7, 7, 10, 10) = pen_obs.asDiagonal();
-    WN.block(0, 0, 3, 3) = pen_pos.asDiagonal();
+    W.block(4, 4, 4, 4) = pen_pos.asDiagonal();
+    W.block(8, 8, 10, 10) = pen_obs.asDiagonal();
+    WN.block(0, 0, 4, 4) = pen_pos.asDiagonal();
 
     Eigen::Map<Eigen::Matrix<double, ACADO_NY, ACADO_NY >>(const_cast<double *>(acadoVariables.W)) = W.transpose();
     Eigen::Map<Eigen::Matrix<double, ACADO_NYN, ACADO_NYN >>(const_cast<double *>(acadoVariables.WN)) =
-            WN.transpose();
+                                                        WN.transpose();
 
     for (size_t i = 0; i < ACADO_N; ++i) {
         acadoVariables.lbValues[4 * i] = -v_x_limit;       // min x vel
@@ -560,26 +562,36 @@ void nlmpc::odomCallback(const nav_msgs::Odometry::ConstPtr &odomRobot, const na
 
     costmap_converter::ObstacleArrayMsg current_obstacles = obstacles;
 
+    yaw_to_next_wp = std::atan2((targetPose(1)-x_0(1)),(targetPose(0)-x_0(0)));
+    double d1 = std::abs(std::fmod((yaw_to_next_wp - x_0(2) + PI + 2 * PI), (2 * PI)) - PI);
+    double d2 = std::abs(std::fmod(((yaw_to_next_wp + PI) - x_0(2) + PI + 2 * PI), (2 * PI)) - PI);
+    if (abs(d1) > abs(d2)){
+        yaw_to_next_wp = yaw_to_next_wp > 0 ? yaw_to_next_wp - PI : yaw_to_next_wp + PI;
+    }
+    yaw_to_next_wp = std::fmod(yaw_to_next_wp, 2 * PI);
+
+    double step =  (std::fmod((yaw_to_next_wp - x_0(2) + PI + 2 * PI), (2 * PI)) - PI)/ACADO_N;
+
     for (size_t i = 0; i < ACADO_N; i++) {
 //        ROS_INFO_STREAM("---------------- " << i << " -----------------");
         Eigen::VectorXd tmp = computeObsPos(i, x_0(0), x_0(1), covariance_radius, current_obstacles);
         online_data.block(i, 0, 1, ACADO_NOD) << tmp.transpose().matrix();
         reference.block(i, 0, 1, ACADO_NY)
-                << 0, 0, 0, 0, targetPose(0), targetPose(1), targetYaw, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+                << 0, 0, 0, 0, targetPose(0), targetPose(1), x_0(2)+i*step, targetYaw, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
         // vel_{x,y,y_rob,y_cam}, final_orientation, obstacles potential{1-10}
     }
-    referenceN << targetPose(0), targetPose(1), targetYaw;
+    referenceN << targetPose(0), targetPose(1), yaw_to_next_wp, targetYaw;
 
     Eigen::VectorXd tmp = computeObsPos(ACADO_N, x_0(0), x_0(1), covariance_radius, current_obstacles);
     online_data.block(ACADO_N, 0, 1, ACADO_NOD) << tmp.transpose().matrix();
 
     Eigen::Map<Eigen::Matrix<double, ACADO_NX, 1 >>(const_cast<double *>(acadoVariables.x0)) = x_0;
     Eigen::Map<Eigen::Matrix<double, ACADO_NY, ACADO_N >>(const_cast<double *>(acadoVariables.y)) =
-            reference.transpose();
+                                                       reference.transpose();
     Eigen::Map<Eigen::Matrix<double, ACADO_NYN, 1 >>(const_cast<double *>(acadoVariables.yN)) =
-            referenceN.transpose();
+                                                        referenceN.transpose();
     Eigen::Map<Eigen::Matrix<double, ACADO_NOD, ACADO_N + 1 >>(const_cast<double *>(acadoVariables.od)) =
-            online_data.transpose();
+                                                        online_data.transpose();
 
     ros::WallTime time_before_solving = ros::WallTime::now();
     int acado_status;
@@ -763,28 +775,28 @@ void nlmpc::initializeSolver(Eigen::VectorXd x_0, bool first) {
     }
     // set current state as reference, only if it's the first re-init
     if (first) {
-        referenceN << x_0(0), x_0(1), x_0(3);
+        referenceN << x_0(0), x_0(1), x_0(2), x_0(3);
         for (size_t i = 0; i < ACADO_N; i++) {
             reference.block(i, 0, 1, ACADO_NY)
-                    << 0, 0, 0, 0, x_0(0), x_0(1), x_0(3), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+                    << 0, 0, 0, 0, x_0(0), x_0(1), x_0(2), x_0(3), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
             // vel_{x,y,y_rob,y_cam}, final_orientation, obstacles potential{1-10}
         }
     }
 
     Eigen::Map<Eigen::Matrix<double, ACADO_NX, ACADO_N + 1 >>(const_cast<double *>(acadoVariables.x)) =
-            state.transpose();
+                                                       state.transpose();
     Eigen::Map<Eigen::Matrix<double, ACADO_NU, ACADO_N >>(const_cast<double *>(acadoVariables.u)) =
-            input.transpose();
+                                                       input.transpose();
     Eigen::Map<Eigen::Matrix<double, ACADO_NY, ACADO_N >>(const_cast<double *>(acadoVariables.y)) =
-            reference.transpose();
+                                                       reference.transpose();
     Eigen::Map<Eigen::Matrix<double, ACADO_NYN, 1 >>(const_cast<double *>(acadoVariables.yN)) =
-            referenceN.transpose();
+                                                        referenceN.transpose();
 }
 
 
 void nlmpc::ControllerDynConfigCallBack(robotino_mpc::NonLinearMPCConfig &config, uint32_t level) {
     Eigen::Vector4d pen_vel;
-    Eigen::Vector3d pen_pos;
+    Eigen::Vector4d pen_pos;
     Eigen::VectorXd pen_obs(10);
 
     Eigen::VectorXd control_limits(7);
@@ -792,7 +804,7 @@ void nlmpc::ControllerDynConfigCallBack(robotino_mpc::NonLinearMPCConfig &config
 
     pen_vel << config.q_vel_x, config.q_vel_y, config.q_vel_yaw_robot, config.q_vel_yaw_cam;
     pen_obs.setConstant(config.q_obs);
-    pen_pos << config.q_x, config.q_y, config.q_yaw;
+    pen_pos << config.q_x, config.q_y, config.q_yaw_r, config.q_yaw;
 
     control_limits << config.v_x, config.v_y, config.v_tr,
             config.v_yaw_rob, config.v_yaw_cam, config.v_rot,
@@ -817,4 +829,3 @@ void nlmpc::ControllerDynConfigCallBack(robotino_mpc::NonLinearMPCConfig &config
 
     applyParam();
 }
-

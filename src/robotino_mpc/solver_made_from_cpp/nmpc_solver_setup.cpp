@@ -67,6 +67,7 @@ int main() {
     Function h;
     h << velocity_x << velocity_y << velocity_yaw_robot << velocity_yaw_camera;
     h << p_x << p_y;
+    h << yaw_robot;
     h << yaw_camera;
     h << -(1 - exp(0.1 / (dist[0] * dist[0]))) // with dist w/o sqrt
       << -(1 - exp(0.1 / (dist[1] * dist[1])))
@@ -82,7 +83,7 @@ int main() {
     // Ok -- yN verrà dato in cpp ed è la posizione finale. Questo mi da la penalizzazione sulla posizione finale
     Function hN;
     hN << p_x << p_y;
-    hN << yaw_camera;
+    hN << yaw_robot << yaw_camera;
 
     // Provide defined weighting matrices:
     BMatrix W = eye<bool>(h.getDim());

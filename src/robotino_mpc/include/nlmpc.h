@@ -43,7 +43,7 @@ public:
     ~nlmpc();
 
     // Dynamic parameters
-    void setPosPen(const Eigen::Vector3d &pen_pos) {
+    void setPosPen(const Eigen::Vector4d &pen_pos) {
         this->pen_pos = pen_pos;
     }
 
@@ -82,7 +82,7 @@ private:
     double v_x_limit, v_y_limit, v_trans_limit, v_yaw_rob_limit, v_yaw_cam_limit, v_rot_limit, min_dist;
 
     Eigen::Vector4d pen_vel;
-    Eigen::Vector3d pen_pos;
+    Eigen::Vector4d pen_pos;
     Eigen::VectorXd pen_obs;
 
     // solver matrices
@@ -107,7 +107,8 @@ private:
 
     ros::Time last_valid_plan_, last_oscillation_reset_;
 
-    double solve_time_avg, cnt_failed, dist_tolerance, angle_tolerance, oscillation_timeout_, oscillation_reset_dist_, oscillation_reset_angle_, planner_patience_, max_planning_retries_;
+    double solve_time_avg, cnt_failed, dist_tolerance, angle_tolerance, oscillation_timeout_, oscillation_reset_dist_;
+    double yaw_to_next_wp, oscillation_reset_angle_, planner_patience_, max_planning_retries_;
     int reset_dist, reset_angle;
     double roll, pitch, yaw_rob, yaw_cam;
 
