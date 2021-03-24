@@ -1,6 +1,6 @@
-# iRotate: Active Visual SLAM for Omnidirectional Robots
+# [iRotate: Active Visual SLAM for Omnidirectional Robots](https://arxiv.org/abs/2103.11641)
 
-This repository contains the code of iRotate, an active V-SLAM method presented in.
+This repository contains the code of iRotate, an active V-SLAM method submitted to RA-L + IROS2021.
 This project has been developed within [Robot Perception Group](https://ps.is.tue.mpg.de/research_fields/robot-perception-group) at the Max Planck Institute for Intelligent Systems, Tübingen.
 
 
