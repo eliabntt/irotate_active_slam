@@ -244,12 +244,12 @@
             <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
                 <alwaysOn>true</alwaysOn>
                 <updateRate>50.0</updateRate>
-                <bodyName>base_link</bodyName>
+                <bodyName>cameraholder_link</bodyName>
                 <topicName>ground_truth/state</topicName>
                 <gaussianNoise>0.00</gaussianNoise>
                 <frameName>world</frameName>
-                <xyzOffsets>0 0 0</xyzOffsets>
-                <rpyOffsets>0 0 0</rpyOffsets>
+                <xyzOffset>0 0 -0.329990615116</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
             </plugin>
         </gazebo>
     </xacro:macro>

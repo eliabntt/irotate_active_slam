@@ -101,10 +101,18 @@ def odom(msg):
     o_c['pose'].append(msg.pose.pose)
     np.save('odom.npy',o_c)
 
+def odom_merg(msg):
+    global o_c_m
+    o_c_m['time'].append(msg.header.stamp)
+    o_c_m['cov'].append(msg.pose.covariance)
+    o_c_m['pose'].append(msg.pose.pose)
+    np.save('odom_merged.npy',o_c_m)
+
 if __name__ == '__main__':
     f_w = {'wheel1': [], 'wheel2': [], 'wheel3': [], 'tot_wheel': [], 'time': []}
     f_c = {'cam': [], 'time': []}
     o_c = {'cov': [], 'pose':[], 'time': []}
+    o_c_m = {'cov': [], 'pose':[], 'time': []}
     f_feat = {'local': [], 'global': [], 'total': [], 'feat': [], 'time': []}
     f_map = {'total_entropy': [], 'marginal': [], 'area': [], 'time': []}
 
@@ -118,6 +126,7 @@ if __name__ == '__main__':
     rospy.Subscriber("/wheels", TwistStamped, wheels, queue_size=1)
     rospy.Subscriber("/camera_rot", TwistStamped, cam, queue_size=1)
     rospy.Subscriber("/odometry/filtered", Odometry, odom, queue_size=1)
+    rospy.Subscriber("/robot_cam_filtered", Odometry, odom_merg, queue_size=1)
     me = rospy.Publisher("/map_entropy", Float32, queue_size=1)
     mme = rospy.Publisher("/marginal_map_entropy", Float32, queue_size=1)
     ta = rospy.Publisher("/total_area", Float32, queue_size=1)

@@ -66,7 +66,7 @@
             <!-- Basic RTAB-Map Parameters -->
             <param name="publish_tf" value="true"/>
             <param name="database_path" type="string" value="$(arg database_path)"/>
-            <param name="frame_id" type="string" value="base_link"/>
+            <param name="frame_id" type="string" value="base_with_cam"/>
             <!-- Basic RTAB-Map Parameters-->
 
             <param name="odom_sensor_sync" value="true"/>
@@ -82,7 +82,7 @@
             <!-- RTAB-Map Inputs -->
             <remap from="scan" to="$(arg scanner)"/>
             <remap from="rgbd_image" to="rgbd_image"/>
-            <remap from="odom" to="/odometry/filtered"/>
+            <remap from="odom" to="/robot_cam_filtered"/>
 
             <!-- RTAB-Map Output -->
             <remap from="grid_map" to="/map"/>
