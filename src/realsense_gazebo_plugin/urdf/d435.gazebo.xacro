@@ -3,16 +3,17 @@
 <!--
 License: Apache 2.0. See LICENSE file in root directory.
 Copyright(c) 2017 PAL Robotics, S.L. All Rights Reserved
+
 This is the Gazebo URDF model for the Intel RealSense D435 camera
 -->
-
+  
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:macro name="simulation_d435" params="camera_name reference_link topics_ns depth_optical_frame color_optical_frame infrared1_optical_frame infrared2_optical_frame" >
 
-
-  <xacro:macro name="gazebo_d435" params="camera_name reference_link topics_ns depth_optical_frame color_optical_frame publish_pointcloud:=true" > <!-- infrared1_optical_frame infrared2_optical_frame -->
+    <xacro:property name="deg_to_rad" value="0.017453292519943295"/>
 
     <!-- Load parameters to model's main link-->
-    <xacro:property name="deg_to_rad" value="0.01745329251994329577" />
     <gazebo reference="${reference_link}">
       <self_collide>0</self_collide>
       <enable_wind>0</enable_wind>
@@ -27,50 +28,120 @@ This is the Gazebo URDF model for the Intel RealSense D435 camera
       <kd>1</kd>
       <!--<max_vel>0.01</max_vel>
       <min_depth>0</min_depth>-->
-
-
-      <sensor name="kcamera" type="depth">
-        <update_rate>30</update_rate>
-        <camera>
-          <horizontal_fov>${69.4*deg_to_rad}</horizontal_fov> <!--85.2, 69.4-->
+      <sensor name="${camera_name}color" type="camera">
+        <camera name="${camera_name}">
+          <horizontal_fov>${69.4*deg_to_rad}</horizontal_fov>
           <image>
-            <width>848</width>
-            <height>480</height>
-            <format>R8G8B8</format>
+            <width>1280</width>
+            <height>720</height>
+            <format>RGB_INT8</format>
           </image>
           <clip>
-            <near>0.05</near>
+            <near>0.1</near>
             <far>100</far>
           </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
         </camera>
-        <plugin name="kcontroller" filename="libgazebo_ros_openni_kinect.so">
-          <baseline>0.05</baseline>
-          <alwaysOn>true</alwaysOn>
-          <updateRate>30</updateRate>
-          <cameraName>${camera_name}_ir</cameraName>
-          <imageTopicName>/${camera_name}2/color/image_raw</imageTopicName>
-          <cameraInfoTopicName>/${camera_name}2/color/camera_info</cameraInfoTopicName>
-          <depthImageTopicName>/${camera_name}2/depth/image_raw</depthImageTopicName>
-          <depthImageInfoTopicName>/${camera_name}2/depth/camera_info</depthImageInfoTopicName>
-          <pointCloudTopicName>/${camera_name}2/depth/points</pointCloudTopicName>
-          <frameName>camera_depth_optical_frame</frameName>
-          <pointCloudCutoff>0.4</pointCloudCutoff>
-          <pointCloudCutoffMax>5</pointCloudCutoffMax>
-          <distortionK1>0.00000001</distortionK1>
-          <distortionK2>0.00000001</distortionK2>
-          <distortionK3>0.00000001</distortionK3>
-          <distortionT1>0.00000001</distortionT1>
-          <distortionT2>0.00000001</distortionT2>
-          <CxPrime>0</CxPrime>
-          <Cx>0</Cx>
-          <Cy>0</Cy>
-          <hackBaseline>0</hackBaseline>
-        </plugin>
+        <always_on>1</always_on>
+        <update_rate>30</update_rate>
+        <visualize>1</visualize>
+      </sensor>
+      <sensor name="${camera_name}ired1" type="camera">
+        <camera name="${camera_name}">
+          <horizontal_fov>${85.2*deg_to_rad}</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>L_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>90</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+      <sensor name="${camera_name}ired2" type="camera">
+        <camera name="${camera_name}">
+          <horizontal_fov>${85.2*deg_to_rad}</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>L_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>90</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+      <sensor name="${camera_name}depth" type="depth">
+        <camera name="${camera_name}">
+          <horizontal_fov>${85.2*deg_to_rad}</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.100</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>90</update_rate>
+        <visualize>0</visualize>
       </sensor>
     </gazebo>
 
-
-
+    <gazebo>
+      <plugin name="${topics_ns}" filename="librealsense_gazebo_plugin.so">
+        <prefix>${camera_name}</prefix>
+      	<depthUpdateRate>60.0</depthUpdateRate>
+      	<colorUpdateRate>60.0</colorUpdateRate>
+      	<infraredUpdateRate>60.0</infraredUpdateRate>
+      	<depthTopicName>depth/image_raw</depthTopicName>
+      	<depthCameraInfoTopicName>depth/camera_info</depthCameraInfoTopicName>
+      	<colorTopicName>color/image_raw</colorTopicName>
+      	<colorCameraInfoTopicName>color/camera_info</colorCameraInfoTopicName>
+      	<infrared1TopicName>infra1/image_raw</infrared1TopicName>
+      	<infrared1CameraInfoTopicName>infra1/camera_info</infrared1CameraInfoTopicName>
+      	<infrared2TopicName>infra2/image_raw</infrared2TopicName>
+      	<infrared2CameraInfoTopicName>infra2/camera_info</infrared2CameraInfoTopicName>
+      	<colorOpticalframeName>${color_optical_frame}</colorOpticalframeName>
+      	<depthOpticalframeName>${depth_optical_frame}</depthOpticalframeName>
+      	<infrared1OpticalframeName>${infrared1_optical_frame}</infrared1OpticalframeName>
+      	<infrared2OpticalframeName>${infrared2_optical_frame}</infrared2OpticalframeName>
+      	<rangeMinDepth>0.2</rangeMinDepth>
+      	<rangeMaxDepth>10.0</rangeMaxDepth>
+      	<pointCloud>false</pointCloud>
+      	<pointCloudTopicName>depth/points</pointCloudTopicName>
+      	<pointCloudCutoff>0.5</pointCloudCutoff>
+      </plugin>
+    </gazebo>
 
   </xacro:macro>
 </robot>

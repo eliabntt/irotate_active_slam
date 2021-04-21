@@ -52,36 +52,39 @@ Processing enabled by this node:
   <arg name="device_type"         default=""/>
   <arg name="json_file_path"      default=""/>
 
-  <arg name="fisheye_width"       default="640"/>
-  <arg name="fisheye_height"      default="480"/>
-  <arg name="enable_fisheye"      default="true"/>
+  <arg name="fisheye_width"       default="-1"/>
+  <arg name="fisheye_height"      default="-1"/>
+  <arg name="enable_fisheye"      default="false"/>
 
-  <arg name="depth_width"         default="640"/>
-  <arg name="depth_height"        default="480"/>
+  <arg name="depth_width"         default="-1"/>
+  <arg name="depth_height"        default="-1"/>
   <arg name="enable_depth"        default="true"/>
 
-  <arg name="infra_width"         default="640"/>
-  <arg name="infra_height"        default="480"/>
-  <arg name="enable_infra1"       default="true"/>
-  <arg name="enable_infra2"       default="true"/>
+  <arg name="infra_width"         default="-1"/>
+  <arg name="infra_height"        default="-1"/>
+  <arg name="enable_infra1"       default="false"/>
+  <arg name="enable_infra2"       default="false"/>
 
-  <arg name="color_width"         default="640"/>
-  <arg name="color_height"        default="480"/>
+  <arg name="color_width"         default="-1"/>
+  <arg name="color_height"        default="-1"/>
   <arg name="enable_color"        default="true"/>
 
-  <arg name="fisheye_fps"         default="30"/>
-  <arg name="depth_fps"           default="30"/>
-  <arg name="infra_fps"           default="30"/>
-  <arg name="color_fps"           default="30"/>
-  <arg name="gyro_fps"            default="400"/>
-  <arg name="accel_fps"           default="250"/>
-  <arg name="enable_gyro"         default="true"/>
-  <arg name="enable_accel"        default="true"/>
+  <arg name="fisheye_fps"         default="-1"/>
+  <arg name="depth_fps"           default="-1"/>
+  <arg name="infra_fps"           default="-1"/>
+  <arg name="color_fps"           default="-1"/>
+  <arg name="gyro_fps"            default="-1"/>
+  <arg name="accel_fps"           default="-1"/>
+  <arg name="enable_gyro"         default="false"/>
+  <arg name="enable_accel"        default="false"/>
 
   <arg name="enable_pointcloud"   default="false"/>
   <arg name="enable_sync"         default="true"/>
   <arg name="align_depth"         default="true"/>
   <arg name="filters"             default=""/>
+
+  <arg name="publish_tf"          default="true"/>
+  <arg name="tf_publish_rate"     default="0"/> <!-- 0 - static transform -->
 
   <!-- rgbd_launch specific arguments -->
 
@@ -153,6 +156,9 @@ Processing enabled by this node:
       <arg name="enable_gyro"              value="$(arg enable_gyro)"/>
       <arg name="enable_accel"             value="$(arg enable_accel)"/>
       <arg name="filters"                  value="$(arg filters)"/>
+
+      <arg name="publish_tf"               value="$(arg publish_tf)"/>
+      <arg name="tf_publish_rate"          value="$(arg tf_publish_rate)"/>
     </include>
 
     <!-- RGB processing -->

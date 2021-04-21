@@ -1,0 +1,12 @@
+<launch>
+  <include
+    file="$(find gazebo_ros)/launch/empty_world.launch" />
+
+  <node
+    name="spawn_model"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    args="-file $(find realsense_gazebo_plugin)/urdf/d435.sdf -sdf -model d435"
+    output="screen" />
+
+</launch>

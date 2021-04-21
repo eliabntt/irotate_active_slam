@@ -23,9 +23,7 @@ catkin_package(
 )
 
 include_directories(
-    include)
-include_directories(
-    SYSTEM
+    include
     ${catkin_INCLUDE_DIRS}
     ${GAZEBO_INCLUDE_DIRS}
 )
@@ -47,7 +45,7 @@ install(
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
-foreach(dir include)
+foreach(dir include meshes urdf)
     install(DIRECTORY ${dir}/
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)

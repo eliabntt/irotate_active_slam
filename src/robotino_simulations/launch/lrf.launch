@@ -1,0 +1,26 @@
+<launch>
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <!-- <arg name="hostname" default="172.26.1.1" /> -->
+    <arg name="delete" default=""/>
+    <arg name="sim" default="true"/>
+    <arg name="remote" default="false"/>
+    <arg name="cuda" default="false"/>
+    <arg name="db" default="rtabmap.db"/>
+    <arg name="hostname" default="10.0.0.1"/>
+    <arg name="explore" default="false"/>
+
+    <param name ="/use_sim_time" value="$(arg sim)"/>
+
+    <group unless="$(arg sim)">
+
+            <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+                <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
+                <param name="serial_baudrate" type="int" value="115200"/><!--A1/A2 -->
+                <!--param name="serial_baudrate"     type="int"    value="256000"--><!--A3 -->
+                <param name="frame_id" type="string" value="base_link"/>
+                <param name="inverted" type="bool" value="false"/>
+                <param name="angle_compensate" type="bool" value="true"/>
+            </node>
+   </group>
+
+</launch>

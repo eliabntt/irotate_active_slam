@@ -1,0 +1,37 @@
+<launch>
+ <!-- Arguments from main.launch -->
+    <arg name="database_path" default="rtabmap.db"/>
+    <arg name="sim" default="true"/>
+    <arg name="delete" default=""/>
+    <arg name="cuda" default="true"/>
+    <arg name="compressed" default="false"/>
+    <arg name="image_transport" default="compressed"/>
+    <arg name="robust" default="false"/>
+
+    <!-- Arguments for rtabmap and other nodes -->
+    <arg name="camera_info_topic" default="/camera/color/camera_info"/>  <!-- /camera_info -->
+    <arg name="rgb_topic" default="/camera/color/image_raw"/> <!-- todo try compressed -->
+    <arg name="depth_topic" default="/camera/depth/image_rect_raw" unless="$(arg sim)"/>
+    <arg name="depth_topic" default="/camera2/depth/image_raw" if="$(arg sim)"/>
+    <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
+    <arg name="scanner" default="/scan" unless="$(arg sim)"/>
+
+    <arg name="visual_odometry" default="false"/>
+    <arg name="max_depth" default="4"/> <!-- max features depth-->
+    <arg name="min_depth" default="0.4"/> <!-- min features depth-->
+    <arg name="detector" default="2"/>
+    <group ns="rtabmap">
+
+    <node pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="screen">
+            <param name="frame_id" type="string" value="base_link"/>
+            <param name="queue_size" value="1"/>
+            <param name="publish_tf" value="false"/>
+            <remap from="scan" to="$(arg scanner)"/>
+
+            <param name="Odom/Strategy" type="string" value="0"/>
+            <param name="Odom/GuessMotion" type="string" value="true"/>
+            <param name="Odom/ResetCountdown" type="string" value="10"/>
+            <param name="Odom/ScanKeyFrameThr" type="string" value="0.95"/>
+        </node>
+   </group>
+</launch>

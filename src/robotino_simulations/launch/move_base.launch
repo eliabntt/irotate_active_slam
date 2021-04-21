@@ -17,7 +17,7 @@
 
 
     <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
-    <arg name="scanner" default="/robot/laser/scan" unless="$(arg sim)"/>
+    <arg name="scanner" default="/scan" unless="$(arg sim)"/>
 
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="log">
 

@@ -12,6 +12,7 @@ T265RealsenseNode::T265RealsenseNode(ros::NodeHandle& nodeHandle,
                                      {
                                          _monitor_options = {RS2_OPTION_ASIC_TEMPERATURE, RS2_OPTION_MOTION_MODULE_TEMPERATURE};
                                          initializeOdometryInput();
+                                         handleWarning();
                                      }
 
 void T265RealsenseNode::initializeOdometryInput()
@@ -24,7 +25,7 @@ void T265RealsenseNode::initializeOdometryInput()
         return;
     }
     std::ifstream calibrationFile(calib_odom_file);
-    if (not calibrationFile)
+    if (!calibrationFile)
     {
         ROS_FATAL_STREAM("calibration_odometry file not found. calib_odom_file = " << calib_odom_file);
         throw std::runtime_error("calibration_odometry file not found" );
@@ -41,15 +42,36 @@ void T265RealsenseNode::initializeOdometryInput()
     _use_odom_in = true;
 }
 
+void T265RealsenseNode::toggleSensors(bool enabled)
+{
+  ROS_WARN_STREAM("toggleSensors method not implemented for T265");
+}
+
 void T265RealsenseNode::publishTopics()
 {
     BaseRealSenseNode::publishTopics();
     setupSubscribers();
 }
 
+void  T265RealsenseNode::handleWarning()
+{
+    rs2::log_to_callback( rs2_log_severity::RS2_LOG_SEVERITY_WARN, [&]
+      ( rs2_log_severity severity, rs2::log_message const & msg ) noexcept {
+        _T265_fault =  msg.raw();
+        std::array<std::string, 2> list_of_fault{"SLAM_ERROR", "Stream transfer failed, exiting"};
+        auto it = std::find_if(begin(list_of_fault), end(list_of_fault),
+                  [&](const std::string& s) {return _T265_fault.find(s) != std::string::npos; });
+        if (it != end(list_of_fault))
+        {
+          callback_updater.add("Warning ",this, & T265RealsenseNode::warningDiagnostic);
+          callback_updater.force_update();
+        }
+    });
+}
+
 void T265RealsenseNode::setupSubscribers()
 {
-    if (not _use_odom_in) return;
+    if (!_use_odom_in) return;
 
     std::string topic_odom_in;
     _pnh.param("topic_odom_in", topic_odom_in, DEFAULT_TOPIC_ODOM_IN);
@@ -116,4 +138,9 @@ void T265RealsenseNode::calcAndPublishStaticTransform(const stream_index_pair& s
             publish_static_tf(transform_ts_, zero_trans, quaternion_optical, _depth_aligned_frame_id[stream], _optical_frame_id[stream]);
         }
     }
+}
+
+void T265RealsenseNode::warningDiagnostic(diagnostic_updater::DiagnosticStatusWrapper& status)
+{
+  status.summary(diagnostic_msgs::DiagnosticStatus::WARN, _T265_fault);
 }

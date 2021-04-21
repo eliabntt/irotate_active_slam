@@ -10,16 +10,9 @@
     <arg name="explore" default="false"/>
     <arg name="gt" default="$(arg sim)"/>
 
+    <param name ="/use_sim_time" value="$(arg sim)"/>
+
     <group unless="$(arg sim)">
-        <node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
-            <param name="hostname" value="$(arg hostname)"/>
-            <param name="max_linear_vel" value="0.1"/>
-            <param name="min_linear_vel" value="0.01"/>
-            <param name="max_angular_vel" value="1.0"/>
-            <param name="min_angular_vel" value="0.01"/>
-            <remap from="robotino_joint_states" to="joint_states"/>
-            <!--remap from="image_raw" to="image"/-->
-        </node>
         <node name="robotino_odometry_node" pkg="robotino_node" type="robotino_odometry_node" output="screen">
             <param name="hostname" value="$(arg hostname)"/>
         </node>
@@ -27,7 +20,7 @@
         <group unless="$(arg remote)">
             <!-- load camera and lidar -->
             <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-                <arg name="enable_infra1" value="false"/>
+            <!--   <arg name="enable_infra1" value="false"/>
                 <arg name="enable_infra2" value="false"/>
                 <arg name="enable_fisheye" value="false"/>
                 <arg name="depth_fps" default="60"/>
@@ -35,7 +28,7 @@
                 <arg name="align_depth" value="true"/>
                 <arg name="enable_sync" value="true"/>
                 <arg name="clip_distance" value="3"/>
-                <arg name="allow_no_texture_points" value="false"/>
+                <arg name="allow_no_texture_points" value="false"/> -->
             </include>
 
             <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
@@ -46,24 +39,44 @@
                 <param name="inverted" type="bool" value="false"/>
                 <param name="angle_compensate" type="bool" value="true"/>
             </node>
-
-            <rosparam command="load" file="$(find robotino_description)/urdf/joints.yaml"/>
         </group>
+	<node pkg="robot_localization" type="ekf_localization_node" name="camera_ekf" clear_params="true"
+              output="screen">
+            <remap from="/set_pose" to="/camera/set_pose"/>
+            <param name="frequency" value="100"/>
+            <param name="sensor_timeout" value="0.05"/>
+            <param name="two_d_mode" value="true"/>
+            <param name="publish_tf" value="true"/>
+            <param name="base_link_frame" value="cameraholder_link"/>
+            <param name="odom_frame" value="pantilt_link"/>
+            <param name="world_frame" value="pantilt_link"/>
 
+	 <remap from="/odometry/filtered" to="/camera/odometry/filtered"/>
+        
+ <param name="odom0" value="/camera/odometry"/>
+     <rosparam param="odom0_config">[true, true, true,
+                false, false, false,
+                false, false, false,
+                false, false, true,
+                false, false, false]
+            </rosparam>
+    <param name="transform_time_offset" value="0.05"/>
+            <rosparam param="initial_state">
+                [0, 0, 0.345,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0]
+            </rosparam>
+	</node>
+	
+	<!-- Launch robotino.launch -->
+	<include file="$(find robotino_description)/launch/robotino.launch">
+		<arg name="sim" value="$(arg sim)"/>
+	</include>
+
+
+	<!-- Launch robotino_mpc.launch -->
+	<include file="$(find robotino_mpc)/launch/robotino_mpc.launch"/> 
     </group>
-
-
-    <!--RTAB-->
-    <include file="$(find robotino_simulations)/launch/mapping.launch">
-        <arg name="delete" value="$(arg delete)"/>
-        <arg name="sim" value="$(arg sim)"/>
-        <arg name="cuda" value="$(arg cuda)"/>
-        <arg name="database_path" value="$(arg db)"/>
-        <arg name="compressed" value="$(arg remote)"/>
-        <arg name="gt" value="$(arg gt)"/>
-    </include>
-
-    <include file="$(find robotino_simulations)/launch/move_base.launch">
-            <arg name="sim" value="$(arg sim)"/>
-    </include>
 </launch>

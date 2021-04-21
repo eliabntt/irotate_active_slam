@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <!-- <arg name="hostname" default="172.26.1.1" /> -->
+    <arg name="delete" default=""/>
+    <arg name="sim" default="false"/>
+    <arg name="remote" default="false"/>
+    <arg name="cuda" default="false"/>
+    <arg name="db" default="rtabmap.db"/>
+    <arg name="_hostname" default="10.0.0.1"/>
+    <arg name="_cmd_vel_topic" default="cmd_vel"/>
+    <arg name="explore" default="false"/>
+
+    <param name ="/use_sim_time" value="$(arg sim)"/>
+
+    <arg name="database_path" default="rtabmap.db"/>
+
+
+
+    <arg name="compressed" default="false"/>
+    <arg name="image_transport" default="compressed"/>
+    <arg name="robust" default="false"/>
+
+    <!-- Arguments for rtabmap and other nodes -->
+    <arg name="camera_info_topic" default="/camera/color/camera_info"/>  <!-- /camera_info -->
+    <arg name="rgb_topic" default="/camera/color/image_raw"/> <!-- todo try compressed -->
+    <arg name="depth_topic" default="/camera/aligned_depth_to_color/image_raw" unless="$(arg sim)"/>
+    <arg name="depth_topic" default="/camera/depth/image_raw" if="$(arg sim)"/>
+    <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
+    <arg name="scanner" default="/scan" unless="$(arg sim)"/>
+
+    <arg name="visual_odometry" default="false"/>
+    <arg name="max_depth" default="3.5"/> <!-- max features depth-->
+    <arg name="min_depth" default="0.4"/> <!-- min features depth-->
+    <arg name="detector" default="2"/>
+
+
+    <!-- //////// rgbd sync  ////////-->
+<group ns="rtabmap">
+	<node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
+            <remap from="rgb/image" to="$(arg rgb_topic)_relay" if="$(arg compressed)"/>
+            <remap from="depth/image" to="$(arg depth_topic)_relay" if="$(arg compressed)"/>
+            <remap from="rgb/image" to="$(arg rgb_topic)" unless="$(arg compressed)"/>
+            <remap from="depth/image" to="$(arg depth_topic)" unless="$(arg compressed)"/>
+
+            <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
+            <remap from="rgbd_image" to="rgbd_image"/> 
+
+            <param name="approx_sync" value="false" unless="$(arg sim)"/>
+            <param name="approx_sync" value="false" if="$(arg sim)"/>
+        </node>
+
+
+	<node if="$(arg compressed)" name="republish_rgb" type="republish" pkg="image_transport"
+              args="$(arg image_transport) in:=$(arg rgb_topic) raw out:=$(arg rgb_topic)_relay"/>
+        <node if="$(arg compressed)" name="republish_depth" type="republish" pkg="image_transport"
+              args="$(arg image_transport)Depth in:=$(arg depth_topic) raw out:=$(arg depth_topic)_relay"/>
+</group>
+    <!-- //////// robot odometry  //////// -->
+    <node name="robotino_odometry_node" pkg="robotino_node" type="robotino_odometry_node" output="screen">
+        <param name="hostname" value="$(arg _hostname)" />
+    </node>
+
+	<node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
+		<param name="hostname" value="$(arg _hostname)" />
+		<param name="max_linear_vel" value="0.5" />
+		<param name="min_linear_vel" value="0.01" />
+		<param name="max_angular_vel" value="1.0" />
+		<param name="min_angular_vel" value="0.01" />
+		<remap from="robotino_joint_states" to="robotino_joint_states" />
+		<!--remap from="image_raw" to="image"/-->
+	</node>
+
+    <!-- //////// xacros  //////// -->
+	
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find robotino_description)/urdf/robotino.urdf.xacro"/> 
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="rrbot" />
+	
+
+    <!-- ////////realsense camera //////// -->
+    <group unless="$(arg sim)">
+        <group unless="$(arg remote)">
+            <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+                <arg name="enable_infra1" value="false"/>
+                <arg name="enable_infra2" value="false"/>
+                <arg name="enable_fisheye" value="false"/>
+				<arg name="accel_fps" value="250"/>
+                <param name="depth_fps" default="60"/>
+                <arg name="color_fps" default="30"/>
+                <arg name="align_depth" value="true"/>
+                <arg name="enable_sync" value="false"/>
+                <arg name="clip_distance" value="3"/>
+                <arg name="allow_no_texture_points" value="false"/>
+				<arg name="enable_pointcloud" value="false"/>
+            </include>
+        </group>
+    </group>	
+    <!-- ////////icp odometry //////// -->
+   <group ns="rtabmap">
+    <node pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="log">
+            <param name="frame_id" type="string" value="base_link"/>
+            <param name="queue_size" value="1"/>
+            <param name="publish_tf" value="false"/>
+            <remap from="scan" to="$(arg scanner)"/>
+
+            <param name="Odom/Strategy" type="string" value="0"/>
+            <param name="Odom/GuessMotion" type="string" value="true"/>
+            <param name="Odom/ResetCountdown" type="string" value="10"/>
+            <param name="Odom/ScanKeyFrameThr" type="string" value="0.95"/>
+        </node>
+   </group>
+    <!-- ////////robot ekf //////// -->
+	<node pkg="robot_localization" type="ekf_localization_node" name="robot_ekf" clear_params="true"
+              output="screen">
+
+	<param name ="/use_sim_time" value="false"/>
+
+        <remap from="/set_pose" to="/robot/set_pose"/>
+
+        <param name="frequency" value="50"/>
+        <param name="sensor_timeout" value="0.05"/>
+        <param name="two_d_mode" value="true"/>
+        <param name="publish_tf" value="true"/>
+
+        <param name="base_link_frame" value="base_link"/>
+        <param name="odom_frame" value="odom"/>
+        <param name="world_frame" value="odom"/>
+        <param name="map_frame" value="map"/>
+
+        <param name="transform_time_offset" value="0.05"/>
+
+	    <param name="odom0" value="/odom"/>
+        <param name="odom1" value="/rtabmap/odom"/>
+
+	    <param name="imu0" value="/camera/imu"/> <!-- accel not used. When both rotation allowed heading camera for robot is not usable. Thus this is NOT working here -->
+        <param name="imu1" value="/imu_body/data"/> <!-- accel not used. Only yaw vel -->
+        <param name="pose0" value="/rtabmap/localization_pose"/>
+
+        <!-- The order of the values is x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. -->
+        <rosparam param="odom0_config">[false, false, false,
+            false, false, false,
+            true, true, false,
+            false, false, true,
+            false, false, false]
+        </rosparam>
+
+        <rosparam param="odom1_config">[false, false, false,
+            false, false, false,
+            true, true, false,
+            false, false, true,
+            false, false, false]
+        </rosparam>
+
+        <!-- Not fusing heading angle for the IMU of the camera-->
+        <rosparam param="imu0_config">[false, false, false,
+            false, false, false,
+            false, false, false,
+            false, false, false,
+            false, false, false]
+        </rosparam>
+
+        <rosparam param="imu1_config">[false, false, false,
+            false, false, false,
+            false, false, false,
+            false, false, true,
+            false, false, false]
+        </rosparam>
+
+
+        <rosparam param="pose0_config">[true, true, false,
+            false, false, false,
+            false, false, false,
+            false, false, false,
+            false, false, false]
+        </rosparam>
+
+        <rosparam param="initial_state">
+            [0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0]
+        </rosparam>
+
+        <param name="smooth_lagged_data" value="true"/>
+        <param name="history_length" value="50"/>
+
+        <param name="imu0_differential" value="false"/>
+        <param name="imu1_differential" value="false"/>
+        <param name="odom0_differential" value="false"/>
+        <param name="odom1_differential" value="false"/>
+        <param name="pose0_differential" value="false"/>
+
+        <param name="imu0_relative" value="false"/>
+        <param name="imu1_relative" value="false"/>
+        <param name="odom0_relative" value="false"/>
+        <param name="odom1_relative" value="false"/>
+        <param name="pose0_relative" value="false"/>
+
+        <param name="odom0_nodelay" value="true"/>
+        <param name="odom1_nodelay" value="true"/>
+
+        <!-- todo true or false -->
+        <param name="imu0_remove_gravitational_acceleration" value="true"/>
+
+        <param name="print_diagnostics" value="true"/>
+
+        <!-- ======== ADVANCED PARAMETERS ======== -->
+        <param name="odom0_queue_size" value="100"/>
+        <param name="odom1_queue_size" value="100"/>
+        <param name="imu0_queue_size" value="100"/>
+        <param name="imu1_queue_size" value="100"/>
+        <param name="pose0_queue_size" value="1"/>
+
+        <param name="dynamic_process_noise_covariance" value="true"/>
+
+        <!-- The values are ordered as x, y, z, roll, pitch, yaw, vx, vy, vz,
+             vroll, vpitch, vyaw, ax, ay, az.-->
+        <rosparam param="process_noise_covariance">[0.002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--y -->   0, 0.002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--z -->   0, 0, 0.006, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--r -->   0, 0, 0, 0.003, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--p -->   0, 0, 0, 0, 0.003, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--ya -->  0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--vx -->  0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0, 0,
+           <!--vy -->  0, 0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0,
+           <!--vz -->  0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0, 0, 0,
+           <!--vr -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0, 0,
+           <!--vp -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0,
+           <!--vya --> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0,
+           <!--ax -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0,
+           <!--ay -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0,
+           <!--az -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001]
+        </rosparam>
+
+        <!-- The values are ordered as x, y,
+             z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. -->
+        <rosparam param="initial_estimate_covariance">[1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9]
+
+        </rosparam>
+
+    </node>
+
+    <!-- ////////camera ekf //////// -->
+   <node pkg="robot_localization" type="ekf_localization_node" name="camera_ekf" clear_params="true"
+              output="screen">
+
+	<param name ="/use_sim_time" value="false"/>
+            <remap from="/set_pose" to="/camera/set_pose"/>
+            <param name="frequency" value="100"/>
+            <param name="sensor_timeout" value="0.05"/>
+            <param name="two_d_mode" value="true"/>
+            <param name="publish_tf" value="true"/>
+            <param name="base_link_frame" value="cameraholder_link"/>
+            <param name="odom_frame" value="pantilt_link"/>
+            <param name="world_frame" value="pantilt_link"/>
+
+	 <remap from="/odometry/filtered" to="/camera/odometry/filtered"/>
+        
+     <param name="odom0" value="/camera/odometry"/>
+     <param name="imu0" value="/imu_cam_filtered/data"/>
+     <rosparam param="odom0_config">[true, true, true,
+                false, false, false,
+                false, false, false,
+                false, false, true,
+                false, false, false]
+            </rosparam>
+
+
+        <rosparam param="imu0_config">[false, false, false,
+            false, false, false,
+            false, false, false,
+            false, false, true,
+            false, false, false]
+        </rosparam>
+
+
+    <param name="transform_time_offset" value="0.05"/>
+            <rosparam param="initial_state">
+                [0, 0, 0.345,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0]
+            </rosparam>
+
+
+    <param name="imu0_differential" value="false"/>
+            <param name="odom0_differential" value="false"/>
+
+            <param name="odom0_relative" value="false"/>
+            <param name="imu0_relative" value="false"/>
+
+            <param name="imu0_remove_gravitational_acceleration" value="true"/>
+
+            <param name="print_diagnostics" value="false"/>
+
+            <param name="odom0_queue_size" value="100"/>
+            <param name="imu0_queue_size" value="100"/>
+
+            <param name="dynamic_process_noise_covariance" value="true"/>
+            <param name="odom0_nodelay" value="true"/>
+
+            <param name="smooth_lagged_data" value="true"/>
+            <param name="history_length" value="50"/>
+
+            <rosparam param="process_noise_covariance">[0.002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--y -->   0, 0.002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--z -->   0, 0, 0.006, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--r -->   0, 0, 0, 0.003, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--p -->   0, 0, 0, 0, 0.003, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--ya -->  0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--vx -->  0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--vy -->  0, 0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0,
+            <!--vz -->  0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0, 0, 0,
+            <!--vr -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0, 0,
+            <!--vp -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0,
+            <!--vya --> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0, 0, 0,
+            <!--ax -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0,
+            <!--ay -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0,
+            <!--az -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001]
+        </rosparam>
+
+        <rosparam param="initial_estimate_covariance">[1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9]
+        </rosparam>
+
+	</node>
+    
+	<node pkg="robotino_gazebo_plugin" type="imu_republish.py" name="imu_republish"/>
+
+
+    <!-- //////// lrf //////// -->
+
+
+    <group unless="$(arg sim)">
+            <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+                <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
+                <param name="serial_baudrate" type="int" value="115200"/><!--A1/A2 -->
+                <!--param name="serial_baudrate"     type="int"    value="256000"--><!--A3 -->
+                <param name="frame_id" type="string" value="base_link"/>
+                <param name="inverted" type="bool" value="false"/>
+                <param name="angle_compensate" type="bool" value="true"/>
+            </node>
+    </group>
+
+</launch>

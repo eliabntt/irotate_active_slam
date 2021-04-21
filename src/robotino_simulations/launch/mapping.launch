@@ -13,8 +13,10 @@
     <arg name="gt" default=""/>
 
     <!-- Arguments for rtabmap and other nodes -->
-    <arg name="camera_info_topic" default="/camera2/color/camera_info"/>  <!-- /camera_info -->
-    <arg name="rgb_topic" default="/camera2/color/image_raw"/> <!-- todo try compressed -->
+    <arg name="camera_info_topic" default="/camera2/color/camera_info" if="$(arg sim)"/>  <!-- /camera_info -->
+    <arg name="rgb_topic" default="/camera2/color/image_raw" if="$(arg sim)"/> <!-- todo try compressed -->
+    <arg name="camera_info_topic" default="/camera/color/camera_info" unless="$(arg sim)"/>  <!-- /camera_info -->
+    <arg name="rgb_topic" default="/camera/color/image_raw" unless="$(arg sim)"/> <!-- todo try compressed -->
     <arg name="depth_topic" default="/camera/depth/image_rect_raw" unless="$(arg sim)"/>
     <arg name="depth_topic" default="/camera2/depth/image_raw" if="$(arg sim)"/>
     <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
