@@ -101,8 +101,38 @@ def odom(msg):
     o_c['pose'].append(msg.pose.pose)
     np.save('odom.npy',o_c)
 
+    global wheel_from_odom
+    # yaw = tf.transformation.euler_from_quaternion(msg.pose.pose.orientation)[2]
+
+    R_WHEEL = 0.04
+    R_BASE = 0.17
+
+    v0 = -msg.twist.twist.linear.x * np.sin(np.pi/3) + msg.twist.twist.linear.y * np.cos(np.pi/3) + msg.twist.twist.angular.z * R_BASE
+    v1 = -msg.twist.twist.linear.y + msg.twist.twist.angular.z * R_BASE
+    v2 = +msg.twist.twist.linear.x * np.sin(np.pi/3) + msg.twist.twist.linear.y * np.cos(np.pi/3) + msg.twist.twist.angular.z * R_BASE
+
+    w0 = abs(v0 / R_WHEEL)
+    w1 = abs(v1 / R_WHEEL)
+    w2 = abs(v2 / R_WHEEL)
+
+    if len(wheel_from_odom['time']) > 0:
+        wheel_from_odom['time'].append(msg.header.stamp)
+        wheel_from_odom['wheel1'].append(wheel_from_odom['wheel1'][-1] + w0 * (msg.header.stamp.to_sec() - wheel_from_odom['time'][-2].to_sec()))
+        wheel_from_odom['wheel2'].append(wheel_from_odom['wheel2'][-1] + w1 * (msg.header.stamp.to_sec() - wheel_from_odom['time'][-2].to_sec()))
+        wheel_from_odom['wheel3'].append(wheel_from_odom['wheel3'][-1] + w2 * (msg.header.stamp.to_sec() - wheel_from_odom['time'][-2].to_sec()))
+        wheel_from_odom['tot_wheel'].append(wheel_from_odom['wheel1'][-1]+wheel_from_odom['wheel2'][-1]+wheel_from_odom['wheel3'][-1])
+    else:
+        wheel_from_odom['time'].append(msg.header.stamp)
+        wheel_from_odom['wheel1'].append(0*w0 * (msg.header.stamp.to_sec()))
+        wheel_from_odom['wheel2'].append(0*w1 * (msg.header.stamp.to_sec()))
+        wheel_from_odom['wheel3'].append(0*w2 * (msg.header.stamp.to_sec()))
+        wheel_from_odom['tot_wheel'].append(wheel_from_odom['wheel1'][-1]+wheel_from_odom['wheel2'][-1]+wheel_from_odom['wheel3'][-1])
+
+    np.save('wheel_from_odom.npy', wheel_from_odom)
+
 if __name__ == '__main__':
     f_w = {'wheel1': [], 'wheel2': [], 'wheel3': [], 'tot_wheel': [], 'time': []}
+    wheel_from_odom = {'wheel1': [], 'wheel2': [], 'wheel3': [], 'tot_wheel': [], 'time': []}
     f_c = {'cam': [], 'time': []}
     o_c = {'cov': [], 'pose':[], 'time': []}
     f_feat = {'local': [], 'global': [], 'total': [], 'feat': [], 'time': []}
