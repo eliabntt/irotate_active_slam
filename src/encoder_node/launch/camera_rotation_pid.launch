@@ -1,0 +1,23 @@
+<launch>
+
+    <node name="encoder_node" pkg="encoder_node" type="encoder_node.py" output="screen" />
+    <!--node name="odometry_camera_republish" pkg="topic_tools" type="transform" args="/camera/odometry/filtered /encoder/rot_speed_filtered std_msgs/Float64 m.twist.twist.angular.z"/-->
+
+    <node name="motor_pid" pkg="pid" type="controller" output="screen" >
+      <param name="Kp" value="87" />
+      <param name="Ki" value="240" />
+      <param name="Kd" value="0" />
+      <param name="upper_limit" value="180" />
+      <param name="lower_limit" value="50" />
+      <param name="cutoff_frequency" value="-1" />
+      <param name="windup_limit" value="1000" /> 
+      <param name="max_loop_frequency" value="300.0" />
+      <param name="min_loop_frequency" value="1" />
+      <param name="setpoint_timeout" value="-1.0" />
+      <param name="topic_from_plant" value="/encoder/rot_speed_filtered" />
+      <param name="topic_from_controller" value="/encoder/control_effort_abs" />
+      <param name="setpoint_topic" value="/encoder/setpoint_abs" />
+      <param name="plant_order" value="1" />
+     </node>
+    <!--node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /-->
+</launch>

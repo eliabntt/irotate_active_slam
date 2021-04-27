@@ -53,7 +53,7 @@
 
 	 <remap from="/odometry/filtered" to="/camera/odometry/filtered"/>
         
- <param name="odom0" value="/camera/odometry"/>
+ <param name="odom0" value="/encoder/odometry"/>
      <rosparam param="odom0_config">[true, true, true,
                 false, false, false,
                 false, false, false,

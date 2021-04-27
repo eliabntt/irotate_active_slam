@@ -37,17 +37,24 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 	odometry_msg_.header.frame_id = "odom";
 	odometry_msg_.header.stamp = stamp_;
 	odometry_msg_.child_frame_id = "base_link";
-	odometry_msg_.pose.pose.position.x = x ;
-	odometry_msg_.pose.pose.position.y = y ;
+	odometry_msg_.pose.pose.position.x = -x ;
+	odometry_msg_.pose.pose.position.y = -y ;
 	odometry_msg_.pose.pose.position.z = 0.0;
 	odometry_msg_.pose.pose.orientation = phi_quat;
-	odometry_msg_.twist.twist.linear.x = vx;
-	odometry_msg_.twist.twist.linear.y = vy;
+	odometry_msg_.twist.twist.linear.x = -vx;
+	odometry_msg_.twist.twist.linear.y = -vy;
 	odometry_msg_.twist.twist.linear.z = 0.0;
 	odometry_msg_.twist.twist.angular.x = 0.0;
 	odometry_msg_.twist.twist.angular.y = 0.0;
 	odometry_msg_.twist.twist.angular.z = omega;
-
+	odometry_msg_.twist.covariance[0] = 0.01;
+	odometry_msg_.twist.covariance[7] = 0.01;
+	odometry_msg_.twist.covariance[14] = 0.01;
+	odometry_msg_.twist.covariance[21] = 0.01;
+	odometry_msg_.twist.covariance[28] = 0.01;
+	odometry_msg_.twist.covariance[35] = 0.01;
+	
+/*
 	odometry_transform_.header.frame_id = "odom";
 	odometry_transform_.header.stamp = odometry_msg_.header.stamp;
 	odometry_transform_.child_frame_id = "base_link";
@@ -57,6 +64,7 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 	odometry_transform_.transform.rotation = phi_quat;
 
 	odometry_transform_broadcaster_.sendTransform( odometry_transform_ );
+*/
 
 	// Publish the msg
 	odometry_pub_.publish( odometry_msg_ );

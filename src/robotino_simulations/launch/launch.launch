@@ -79,6 +79,9 @@
 
     <!-- ////////realsense camera //////// -->
     <group unless="$(arg sim)">
+        <!--include file="$(find encoder_node)/launch/camera_rotation_pid.launch"/-->
+ 
+        <node pkg="librepilot" type="librepilot_node" name="imu_body_ccd3" output="log" args="/machine_ /dev/flightcontroller_serial 115200 __ns:=/machine_ __name:=librepilot_node_ /machine_/offset:=/machine_/target_tracker/offset"/>
         <group unless="$(arg remote)">
             <include file="$(find realsense2_camera)/launch/rs_camera.launch">
                 <arg name="enable_infra1" value="false"/>
@@ -89,6 +92,7 @@
                 <arg name="color_fps" default="30"/>
                 <arg name="align_depth" value="true"/>
                 <arg name="enable_sync" value="false"/>
+                <arg name="unite_imu_method" value="copy"/>
                 <arg name="clip_distance" value="3"/>
                 <arg name="allow_no_texture_points" value="false"/>
 				<arg name="enable_pointcloud" value="false"/>
@@ -255,6 +259,9 @@
 
     </node>
 
+<node pkg="robotino_gazebo_plugin" type="imu_republish.py" name="imu_republish"/>
+<node pkg="robotino_gazebo_plugin" type="imu_body_republisher.py" name="imu_body_republisher"/>
+
     <!-- ////////camera ekf //////// -->
    <node pkg="robot_localization" type="ekf_localization_node" name="camera_ekf" clear_params="true"
               output="screen">
@@ -271,7 +278,7 @@
 
 	 <remap from="/odometry/filtered" to="/camera/odometry/filtered"/>
         
-     <param name="odom0" value="/camera/odometry"/>
+     <param name="odom0" value="/encoder/odometry"/>
      <param name="imu0" value="/imu_cam_filtered/data"/>
      <rosparam param="odom0_config">[true, true, true,
                 false, false, false,
@@ -354,8 +361,7 @@
 
 	</node>
     
-	<node pkg="robotino_gazebo_plugin" type="imu_republish.py" name="imu_republish"/>
-
+	
 
     <!-- //////// lrf //////// -->
 

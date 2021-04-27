@@ -7,4 +7,5 @@
             <param name="verbose" value="true" />
         </node>
     </group>
+   <node name="cmd_vel_camera_republish" pkg="topic_tools" type="transform" args="/camera/cmd_vel /encoder/setpoint std_msgs/Float64 m.angular.z"/>
 </launch>
