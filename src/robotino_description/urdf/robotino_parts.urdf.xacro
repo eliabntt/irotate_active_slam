@@ -195,7 +195,7 @@
             <xacro:insert_block name="origin"/>
             <origin
                 xyz="0 0 0"
-                rpy="0.050256 -1.5708 0" />
+                rpy="0.0 -1.5708 0" />
             <parent link="${parent}"/>
             <child link="${name}_link"/>
             <axis xyz="0 0 1" />
