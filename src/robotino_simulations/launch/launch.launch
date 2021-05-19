@@ -60,7 +60,6 @@
     <node name="robotino_odometry_node" pkg="robotino_node" type="robotino_odometry_node" output="screen">
         <param name="hostname" value="$(arg _hostname)" />
     </node>
-
 	<node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
 		<param name="hostname" value="$(arg _hostname)" />
 		<param name="max_linear_vel" value="0.5" />
@@ -79,7 +78,7 @@
 
     <!-- ////////realsense camera //////// -->
     <group unless="$(arg sim)">
-        <!--include file="$(find encoder_node)/launch/camera_rotation_pid.launch"/-->
+        <include file="$(find encoder_node)/launch/camera_rotation_pid.launch"/>
  
         <node pkg="librepilot" type="librepilot_node" name="imu_body_ccd3" output="log" args="/machine_ /dev/flightcontroller_serial 115200 __ns:=/machine_ __name:=librepilot_node_ /machine_/offset:=/machine_/target_tracker/offset"/>
         <group unless="$(arg remote)">
@@ -268,7 +267,7 @@
 
 	<param name ="/use_sim_time" value="false"/>
             <remap from="/set_pose" to="/camera/set_pose"/>
-            <param name="frequency" value="100"/>
+            <param name="frequency" value="50"/>
             <param name="sensor_timeout" value="0.05"/>
             <param name="two_d_mode" value="true"/>
             <param name="publish_tf" value="true"/>
@@ -330,13 +329,13 @@
             <!--z -->   0, 0, 0.006, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             <!--r -->   0, 0, 0, 0.003, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             <!--p -->   0, 0, 0, 0, 0.003, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            <!--ya -->  0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            <!--ya -->  0, 0, 0, 0, 0, 0.008, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             <!--vx -->  0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0, 0,
             <!--vy -->  0, 0, 0, 0, 0, 0, 0, 0.005, 0, 0, 0, 0, 0, 0, 0,
             <!--vz -->  0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0, 0, 0,
             <!--vr -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0, 0,
             <!--vp -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0, 0, 0,
-            <!--vya --> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0, 0, 0,
+            <!--vya --> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.008, 0, 0, 0,
             <!--ax -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0, 0,
             <!--ay -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0,
             <!--az -->  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.001]
