@@ -19,7 +19,7 @@
     <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
     <arg name="scanner" default="/scan" unless="$(arg sim)"/>
 
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="log">
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" if="true">
 
         <param name="base_global_planner" value="$(arg base_global_planner)"/>
         <param name="GlobalPlanner/orientation_window_size" value="255"/>
@@ -59,7 +59,7 @@
 <!--        <rosparam file="$(find robotino_simulations)/config/planner.yaml" command="load"/>-->
     </node>
 
-    <node name="standalone_converter" pkg="costmap_converter" type="standalone_converter" output="log" respawn="true">
+    <node name="standalone_converter" pkg="costmap_converter" type="standalone_converter" output="screen" respawn="true">
         <param name="converter_plugin" value="costmap_converter::CostmapToDynamicObstacles" />
         <param name="costmap_topic" value="/move_base/local_costmap/costmap" />
         <param name="odom_topic" value="$(arg odom_topic)" />
