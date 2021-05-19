@@ -9,6 +9,7 @@ from geometry_msgs.msg import Quaternion
 
 phase = 0
 rot_speed = 0
+prev_speed = 0
 arduino_time = rospy.Time(0)
 interval_ms = 1
 is_ard = False
@@ -35,6 +36,7 @@ def encoder_node():
    global arduino_time
    global is_ard
    global interval_ms
+   global prev_speed
 
    while not rospy.is_shutdown():
 
@@ -42,8 +44,10 @@ def encoder_node():
       rospy.Subscriber('/encoder/header',Header,get_header,queue_size=1)
       if is_ard:
 	      rot_speed = (3.141592/180)*0.36*1000000/interval_ms
+              prev_speed = rot_speed
       else:
-          rot_speed = 0
+          continue
+          rot_speed = prev_speed
       #print(arduino_time)
 
 ###### Odom #######
@@ -57,7 +61,7 @@ def encoder_node():
       #set position
       msg_odom.pose.pose.position.x = 0 # do for y and z      
       msg_odom.pose.pose.position.y = 0 # do for y and z      
-      msg_odom.pose.pose.position.z = 0 # do for y and z 
+      msg_odom.pose.pose.position.z = 0.345 # do for y and z 
       #Define quaternion rotation around z axis
       #msgOdom.pose.pose.orientation.x = np.cos(phase/2) #  x [quaternion]
       msg_odom.pose.pose.orientation.x = 0 
