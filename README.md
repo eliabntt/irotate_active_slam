@@ -1,10 +1,15 @@
-# [iRotate: Active Visual SLAM for Omnidirectional Robots](https://arxiv.org/abs/2103.11641)
+# iRotate: an Active Visual SLAM Approach
 
-This repository contains the code of iRotate, an active V-SLAM method submitted to RA-L + IROS2021.
+### [iRotate: Active Visual SLAM for Omnidirectional Robots](https://arxiv.org/abs/2103.11641)
+### [Active  Visual  SLAM  with  independently  rotating  camera]()
+
+This repository contains the code of iRotate, an active V-SLAM method submitted to IROS2021.
+Moreover, it is now possible to use our independent camera rotation and also run the method to non-omnidirectional robotic platforms. For details of this work check the corresponding paper submitted to ECMR2021.
+
 This project has been developed within [Robot Perception Group](https://ps.is.tue.mpg.de/research_fields/robot-perception-group) at the Max Planck Institute for Intelligent Systems, Tübingen.
 
-#### The paper can be found [here](https://arxiv.org/abs/2103.11641) -- please cite us if you find this work useful
-#### Check out the video [here](https://www.youtube.com/watch?v=YFD80TxXghk)
+#### The papers can be found [here](https://arxiv.org/abs/2103.11641)(iRotate) and [here]()(independent camera) -- please cite us if you find this work useful 
+#### Check out the video [here](https://www.youtube.com/watch?v=YFD80TxXghk)(iRotate) and [here]()(independent camera).
 
 
 ![](https://user-images.githubusercontent.com/19806758/109616778-dca1b380-7b35-11eb-8071-be8229fbb127.png)
@@ -12,6 +17,13 @@ This project has been developed within [Robot Perception Group](https://ps.is.tu
 ## Getting Started
 
 These instructions will help you to set up both the simulation environment and a real robot scenario for development and testing purposes. 
+
+## Branches
+ - the `master` branch can be used to run the simulation environment with omnidirectional and semi-holonomic robot. You can just change the NMPC config with your limits for the velocities of the robot base and for the camera rotation speed
+ - the `merged_odometry` branch is the master branch with the proposed combination for the state estimate
+ - the `non-holonomic-mpc` is the master branch with the necessary adaptation to simulate a non-holonomic robot within our system. Please note that this is just an approximation.
+ - the two `real_robot` and `real_robot_merged` branches contain the edits to run the master branch with our platform without/with our proposed combined state estimate
+
 
 ### Installation
 
