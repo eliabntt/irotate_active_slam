@@ -10,6 +10,12 @@ import rospy
 from math import log
 from nav_msgs.msg import Odometry
 
+def odom_merg(msg):
+    global o_c_m
+    o_c_m['time'].append(msg.header.stamp)
+    o_c_m['cov'].append(msg.pose.covariance)
+    o_c_m['pose'].append(msg.pose.pose)
+    np.save('odom_merged.npy',o_c_m)
 
 def grid(msg):
     global previous
@@ -142,12 +148,14 @@ if __name__ == '__main__':
     previous_entropy = 0
     llc = 0
     glc = 0
+    o_c_m = {'cov': [], 'pose':[], 'time': []}
     rospy.init_node("logger")
+    rospy.Subscriber("/robot_cam_filtered", Odometry, odom_merg, queue_size=1)
     rospy.Subscriber("/rtabmap/grid_prob_map", OccupancyGrid, grid, queue_size=1)
     rospy.Subscriber("/rtabmap/info", Info, features, queue_size=1)
     rospy.Subscriber("/wheels", TwistStamped, wheels, queue_size=1)
     rospy.Subscriber("/camera_rot", TwistStamped, cam, queue_size=1)
-    rospy.Subscriber("/odometry/filtered", Odometry, odom, queue_size=1)
+    rospy.Subscriber("/odometry/filtered", Odometry, odom, queue_size=1,buff_size=2**24)
     me = rospy.Publisher("/map_entropy", Float32, queue_size=1)
     mme = rospy.Publisher("/marginal_map_entropy", Float32, queue_size=1)
     ta = rospy.Publisher("/total_area", Float32, queue_size=1)
