@@ -1,7 +1,7 @@
 # iRotate: an Active Visual SLAM Approach
 
 ### [iRotate: Active Visual SLAM for Omnidirectional Robots](https://arxiv.org/abs/2103.11641)
-### [Active  Visual  SLAM  with  independently  rotating  camera]()
+### [Active  Visual  SLAM  with  independently  rotating  camera](https://arxiv.org/abs/2105.08958)
 
 This repository contains the code of iRotate, an active V-SLAM method submitted to IROS2021.
 Moreover, it is now possible to use our independent camera rotation and also run the method to non-omnidirectional robotic platforms. For details of this work check the corresponding paper submitted to ECMR2021.
