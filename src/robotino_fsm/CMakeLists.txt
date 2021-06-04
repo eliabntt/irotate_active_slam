@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
         tf
         rtabmap_ros
         message_filters
+	active_slam
         )
 
 catkin_package(
@@ -26,6 +27,7 @@ catkin_package(
         tf
         message_filters
         rtabmap_ros
+	active_slam
         LIBRARIES rtabmap_ros
 )
 
