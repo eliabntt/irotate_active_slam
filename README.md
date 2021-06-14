@@ -9,7 +9,7 @@ Moreover, it is now possible to use our independent camera rotation and also run
 This project has been developed within [Robot Perception Group](https://ps.is.tue.mpg.de/research_fields/robot-perception-group) at the Max Planck Institute for Intelligent Systems, Tübingen.
 
 #### The papers can be found [here](https://arxiv.org/abs/2103.11641)(iRotate) and [here](https://arxiv.org/abs/2105.08958)(independent camera) -- please cite us if you find this work useful 
-#### Check out the video [here](https://www.youtube.com/watch?v=YFD80TxXghk)(iRotate) and [here]()(independent camera).
+#### Check out the video [here](https://www.youtube.com/watch?v=YFD80TxXghk)(iRotate) and [here](https://www.youtube.com/watch?v=emdJcSveNX4)(independent camera).
 
 
 ![](https://user-images.githubusercontent.com/19806758/109616778-dca1b380-7b35-11eb-8071-be8229fbb127.png)
