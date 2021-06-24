@@ -43,7 +43,7 @@ There are many prerequisites. Please follow instructions on the linked webpages 
 - RTABMap:
     - `git clone https://github.com/introlab/rtabmap && cd rtabmap`
     - `git checkout 39f68c44c`
-    - copy the edited rtabmap files into the cloned folder `cp <your-active_v_slam>/rtabmap-edited/* <your-rtabmap>/corelib/`
+    - copy the edited rtabmap files into the cloned folder `cp <your-active_v_slam>/rtabmap-edited/* <your-rtabmap>/corelib/src`
     - build and install rtabmap. **NOTE** Be careful that the end of `cmake ..` must be "Build files have been written to ..." w/o ANY _subsequent_ warnings. GTSAM, g2o, OpenCV should be automatically recognized and enabled for the building.
     - Test the installation by running `rtabmap` command in a console. A preemptive `sudo ldconfig` might be necessary.
  
