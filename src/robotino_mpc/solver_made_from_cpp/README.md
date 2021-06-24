@@ -9,16 +9,16 @@ Build/Install:
 
 From this folder do:
 
-mkdir build
+```mkdir build
 cd build
 cmake ..
 make
-
+```
 The executable is now placed in the folder active_v_slam/src/robotino_mpc/solver_made_from_cpp/solver
 
-cd such folder
+`cd such folder`
 
-run ./nmpc_solver_setup
+`run ./nmpc_solver_setup`
 
 Then the controller is generated.
 
