@@ -50,7 +50,7 @@ There are many prerequisites. Please follow instructions on the linked webpages 
 - Gazebo: 
     - Launch gazebo at least once so that folders are created.
     - \[optional\] Download gazebo's models and place them in `~/.gazebo/models`
-    - Download 3dgems models with `sh 3dgems.sh`
+    - Download 3dgems models with `sh 3dgems.sh` -- **note** it seems down, you can find those [here](https://github.com/chaolmu/gazebo_models_worlds_collection/tree/master/models)
     - Download models from [AWS](https://github.com/aws-robotics/aws-robomaker-small-house-world/tree/ros1/models) and place them in `~/.gazebo/models`
 - Catkin make on the main project folder
 ______
