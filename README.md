@@ -2,6 +2,9 @@
 
 ### [iRotate: Active Visual SLAM for Omnidirectional Robots](https://arxiv.org/abs/2103.11641)
 ### [Active  Visual  SLAM  with  independently  rotating  camera](https://arxiv.org/abs/2105.08958)
+__________
+#### Available for both ROS-Melodic/Ubuntu 18.04 and ROS-Noetic/Ubuntu 20.04
+__________
 
 This repository contains the code of iRotate, an active V-SLAM method submitted to IROS2021.
 Moreover, it is now possible to use our independent camera rotation and also run the method to non-omnidirectional robotic platforms. For details of this work check the corresponding paper submitted to ECMR2021.
@@ -18,20 +21,22 @@ This project has been developed within [Robot Perception Group](https://ps.is.tu
 
 These instructions will help you to set up both the simulation environment and a real robot scenario for development and testing purposes. 
 
-## Branches
+## Branches description
  - the `master` branch can be used to run the simulation environment with omnidirectional and semi-holonomic robot. You can just change the NMPC config with your limits for the velocities of the robot base and for the camera rotation speed
  - the `merged_odometry` branch is the master branch with the proposed combination for the state estimate
  - the `non-holonomic-mpc` is the master branch with the necessary adaptation to simulate a non-holonomic robot within our system. Please note that this is just an approximation.
  - the two `real_robot` and `real_robot_merged` branches contain the edits to run the master branch with our platform without/with our proposed combined state estimate
+ - the `noetic` brach has the edits to run the other branches in Ubuntu 20.04 / ROS Noetic
 
 
-### Installation
+## Installation
 
 There are many prerequisites. Please follow instructions on the linked webpages on how to install them.
 - Clone this repository
 - Update CMake to the latest version: follow [this](https://apt.kitware.com/). Tested with CMake 3.16.5
 - OpenCV with contrib and non-free enabled. Tested with 3.4.3
 - Install ros-melodic-desktop-full following [this](http://wiki.ros.org/melodic/Installation/Ubuntu)
+  - **If you want to use ros-NOETIC switch branch**
 - Install ros prerequisites `sh ros-req.sh`
 - \[optional\] (For the notebook visualization) Install python3, pip3 and virtualenv
     - create a virtualenv with python3.6
@@ -59,7 +64,7 @@ ______
     - robotino's packages: rec-rpc robotino-dev and robotino-api2 from [here](https://wiki.openrobotino.org/index.php?title=Robotino_OS) in this order
     - REMOVE the CATKIN_IGNORE from `src/realsense-ros/realsense2-camera`, `src/robotino-node`, `src/robotino-rest-node`, `src/robotino-teleop`
     - do `catkin_make` again. If error occurs because of missing robotino's msg files you can run `mkdir -p ./devel/include/robotino_msgs && cp robotino_specific/robotino_msgs/*.h ./devel/include/robotino_msgs`
-_______
+
 ## How to run
 Since you will need at least 5 terminals to run this project my suggestion is to use a package like _terminator_.
 1. Launch the simulation environment `roslaunch robotino_simulations world.launch` [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/launch/world.launch). 
@@ -94,6 +99,19 @@ Since you will need at least 5 terminals to run this project my suggestion is to
     - With `weighted_avg:=true/false` you can switch between weighted avg and weighted sum as total utility of a path
     - With `pre_fix:=true/false` you can decide if the system should pre-optimize the heading after choosing the path to follow. Only applicable if `only_last:=true`
     - With `mid_optimizer:=true/false` you can turn on/off the optimization procedure for the next waypoint.
+________
+**COMMAND LIST EXAMPLE**
+
+```
+roslaunch robotino_simulations world.launch name:="cafe" gui:=true
+roslaunch robotino_mpc robotino_mpc.launch 
+roslaunch robotino_simulations rtabmap.launch delete:=-d
+rosrun robotino_simulations rtabmap_eval.py  
+python src/pause.py && ./back.sh 'main_folder' 'experiment_name' 'session_number' #or python3
+roslaunch active_slam active_node.launch
+roslaunch robotino_camera_heading best_heading.launch 
+roslaunch robotino_fsm robotino_fsm.launch kind:=7 only_last_set:=false pre_fix:=false mid_optimizer:=false weighted_avg:=false
+```
 
 ## Custom robot system
 This algorithm has been tested thoroughly based on our hw architecture fully simulated inside the Gazebo environment.
