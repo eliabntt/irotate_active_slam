@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float32, Int16
 from nav_msgs.msg import OccupancyGrid
