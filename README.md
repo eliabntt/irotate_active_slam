@@ -32,7 +32,8 @@ These instructions will help you to set up both the simulation environment and a
 ## Installation
 
 There are many prerequisites. Please follow instructions on the linked webpages on how to install them.
-- Clone this repository
+- Clone this repository. 
+     - **IMPORTANT: move the content of the `src` folder in the `src` folder of your catkin workspace**
 - Update CMake to the latest version: follow [this](https://apt.kitware.com/). Tested with CMake 3.16.5
 - OpenCV with contrib and non-free enabled. Tested with 3.4.3
 - Install ros-melodic-desktop-full following [this](http://wiki.ros.org/melodic/Installation/Ubuntu)
