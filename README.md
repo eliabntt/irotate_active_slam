@@ -1,7 +1,7 @@
 # iRotate: an Active Visual SLAM Approach
 
 ### [iRotate: Active Visual SLAM for Omnidirectional Robots](https://arxiv.org/abs/2103.11641) --- [video](https://www.youtube.com/watch?v=YFD80TxXghk)
-### [Active Visual SLAM with Independently Rotating Camera](https://arxiv.org/abs/2105.08958) --- [video](https://www.youtube.com/watch?v=syIYP-uxyg0)
+### [Active Visual SLAM with Independently Rotating Camera](https://ieeexplore.ieee.org/document/9568791) --- [video](https://www.youtube.com/watch?v=syIYP-uxyg0)
 __________
 #### Available for both ROS-Melodic/Ubuntu 18.04 and ROS-Noetic/Ubuntu 20.04
 __________
@@ -11,7 +11,7 @@ Moreover, it is now possible to use our independent camera rotation and also run
 
 This project has been developed within [Robot Perception Group](https://ps.is.tue.mpg.de/research_fields/robot-perception-group) at the Max Planck Institute for Intelligent Systems, Tübingen.
 
-#### The papers can be found [here](https://arxiv.org/abs/2103.11641)(iRotate) and [here](https://arxiv.org/abs/2105.08958)(independent camera) -- please cite us if you find this work useful
+#### The papers can be found [here](https://arxiv.org/abs/2103.11641)(iRotate) and [here](https://ieeexplore.ieee.org/document/9568791)(independent camera) -- please cite us if you find this work useful
 
 ![](https://user-images.githubusercontent.com/19806758/109616778-dca1b380-7b35-11eb-8071-be8229fbb127.png)
 
@@ -22,7 +22,7 @@ These instructions will help you to set up both the simulation environment and a
 ## Branches description
  - the `master` branch can be used to run the simulation environment with omnidirectional and semi-holonomic robot. You can just change the NMPC config with your limits for the velocities of the robot base and for the camera rotation speed
  - the `merged_odometry` branch is the master branch with the proposed combination for the state estimate
- - the `non-holonomic-mpc` is the master branch with the necessary adaptation to simulate a non-holonomic robot within our system. Please note that this is just an approximation.
+ - the `non-holonomic-mpc` is the master branch with the necessary adaptation to simulate a non-holonomic robot within our system. Please note that this is just an approximation. **To use this with the merged odometry strategy** please merge manually the two branches.
  - the two `real_robot` and `real_robot_merged` branches contain the edits to run the master branch with our platform without/with our proposed combined state estimate
  - the `noetic` brach has the edits to run the other branches in Ubuntu 20.04 / ROS Noetic
 
@@ -33,9 +33,9 @@ There are many prerequisites. Please follow instructions on the linked webpages 
 - Clone this repository. 
      - **IMPORTANT: move the content of the `src` folder in the `src` folder of your catkin workspace**
 - Update CMake to the latest version: follow [this](https://apt.kitware.com/). Tested with CMake 3.16.5
-- OpenCV with contrib and non-free enabled. Tested with 3.4.3
+- OpenCV with contrib and non-free enabled. Tested with 3.4.3. Works with 4.* but results were not checked.
 - Install ros-melodic-desktop-full following [this](http://wiki.ros.org/melodic/Installation/Ubuntu)
-  - **If you want to use ros-NOETIC switch branch**
+  - **If you want to use ros-NOETIC remember to switch branch**
 - Install ros prerequisites `sh ros-req.sh`
 - \[optional\] (For the notebook visualization) Install python3, pip3 and virtualenv
     - create a virtualenv with python3.6
@@ -50,19 +50,14 @@ There are many prerequisites. Please follow instructions on the linked webpages 
     - copy the edited rtabmap files into the cloned folder `cp <your-active_v_slam>/rtabmap-edited/* <your-rtabmap>/corelib/src`
     - build and install rtabmap. **NOTE** Be careful that the end of `cmake ..` must be "Build files have been written to ..." w/o ANY _subsequent_ warnings. GTSAM, g2o, OpenCV should be automatically recognized and enabled for the building.
     - Test the installation by running `rtabmap` command in a console. A preemptive `sudo ldconfig` might be necessary.
- 
+    - *The latest version of RTABMap could also be used. It is not fully tested. In that case you need to update `rtabmap-ros` in the `src` folder accordingly and merge the changes. An example of such work has been carried out in the `noetic` branch.*  
 - Gazebo: 
     - Launch gazebo at least once so that folders are created.
     - Get the models
         - \[Option 1\] Download and follow instructions for models from [here](https://github.com/eliabntt/gazebo_models)
         - \[Option 2\] download models from 3dgems with `sh 3dgems.sh` -- **note** it seems down -- and from [AWS](https://github.com/aws-robotics/aws-robomaker-small-house-world/tree/ros1/models) and place them in `~/.gazebo/models`
-- Catkin make on the main project folder
-______
-- **ONLY REAL ROBOT**: 
-    - Install [librealsense](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md)
-    - robotino's packages: rec-rpc robotino-dev and robotino-api2 from [here](https://wiki.openrobotino.org/index.php?title=Robotino_OS) in this order
-    - REMOVE the CATKIN_IGNORE from `src/realsense-ros/realsense2-camera`, `src/robotino-node`, `src/robotino-rest-node`, `src/robotino-teleop`
-    - do `catkin_make` again. If error occurs because of missing robotino's msg files you can run `mkdir -p ./devel/include/robotino_msgs && cp robotino_specific/robotino_msgs/*.h ./devel/include/robotino_msgs`
+- Catkin make (both `catkin_build` or `catkin make` works) on the main project folder
+
 
 ## How to run
 Since you will need at least 5 terminals to run this project my suggestion is to use a package like _terminator_.
@@ -71,8 +66,8 @@ Since you will need at least 5 terminals to run this project my suggestion is to
        
        .world files are placed in `robotino_simulations/worlds/`
     2. This node takes care also of launching the nodes for generating the necessary ground truth transforms
-    3. In case a shift is needed (like with the AWS's small_house) the `robot_ekf` in `robotino_description/launch/robotino.launch` should be adapted to get the corrispondent starting pose since groundtruth will reflect this shift
-2. Run the [MPC](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_mpc/launch/robotino_mpc.launch):  `roslaunch robotino_mpc robotino_mpc.launch`. [Parameters](https://github.com/eliabntt/active_v_slam/tree/master/src/robotino_mpc/cfg) in `robotino_mpc/cfg/nmpc.yaml` will be used in the code to configure mainly the topics while NMPC constraints can be configured either dynamically (`rosrun rqt_reconfigure rqt_reconfigure`) or by editing the `robotino_mpc/cfg/NonLinearMPC.cfg` file. Note that the latter require a `catkin_make` afterwards.
+    3. In case a shift is needed (like with the AWS's small_house) the `robot_ekf` in `robotino_description/launch/robotino.launch` should be adapted to get the corrispondent starting pose so that groundtruth can reflect this shift
+2. Run the [MPC](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_mpc/launch/robotino_mpc.launch):  `roslaunch robotino_mpc robotino_mpc.launch`. [Parameters](https://github.com/eliabntt/active_v_slam/tree/master/src/robotino_mpc/cfg) in `robotino_mpc/cfg/nmpc.yaml` will be used in the code to configure mainly the topics while NMPC constraints can be configured either dynamically (`rosrun rqt_reconfigure rqt_reconfigure`) or by editing the `robotino_mpc/cfg/NonLinearMPC.cfg` file. Note that the latter require a `catkin_make`.
 3. Run RTABMap: `roslaunch robotino_simulations rtabmap.launch` which is [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/launch/rtabmap.launch). Many things will be launched here.
     1. `move_base` and the costmap converter found [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/launch/move_base.launch). The parameters are placed in `robotino_simulations/config`
     2. The \"main\" [`mapping.launch`](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/launch/mapping.launch) file contains:
@@ -125,7 +120,7 @@ If you want to test this algorithm on your own system there are some changes you
 ## Evaluation
 
 ### Reproducing results
-Results achieved in real world experiments always depend on the hardware in question as well as environmental factors on the day of experiment. However our simulated experiments results were averaged over a large number of identical experiments and should be reproducible by third parties.
+Results achieved in real world experiments always depend on the hardware in question as well as environmental factors on the day of experiment. However our simulated experiments results were averaged over a large number of identical experiments and should be reproducible by third parties. 
 
 We focused on AWS's Small House and an edited version of the Gazebo's Cafè environments. Tests results are averaged among 20 tries of 10 minutes each with the same starting location ([-2,0] and [0,0] respectively).
 
@@ -173,8 +168,7 @@ The notebook requires the "poses.g2o" file for each run. This was initially used
 ## Included external packages / sources
 - [pgm_map_creator](https://github.com/hyfan1116/pgm_map_creator)
 - [rtabmap_ros](https://github.com/introlab/rtabmap_ros): edited in a couple of source files and froze
-- evaluation of the map and frontier extractor from [crowdbot_active_slam](https://github.com/ethz-asl/crowdbot_active_slam). 
-  
+- evaluation of the map and frontier extractor from [crowdbot_active_slam](https://github.com/ethz-asl/crowdbot_active_slam).
     Frontier extractor has been edited to obtain more frontiers.
 - trajectory evaluation from [TUM](https://vision.in.tum.de/data/datasets/rgbd-dataset/tools)
 - realsense-ros and realsense-gazebo-plugin folders. Note that those have slightly edited tfs. This won't impact results you can [probably] freely update those.
