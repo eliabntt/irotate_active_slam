@@ -1,12 +1,13 @@
 ### Generate evaluation files and analyze the results
-To generate evaluation files you need to edit the following files `map.sh`, `back.sh`, `robotino_simulations/src/convert_map.cpp` and `robotino_simulations/src/calculate_map_error.cpp` such that folders are correct for your system.
+To generate evaluation files you need to edit the following files `scripts/map.sh`, `scripts/back.sh`, `robotino_simulations/src/convert_map.cpp` and `robotino_simulations/src/calculate_map_error.cpp` such that folders are correct for your system.
 - `convert_map.cpp:L12` is the destination folder of the map converted to a txt file.
 - `calculate_map_error.cpp:L10-14` are the folders/files used to generate the results and read the (gt)map
 - `map.sh` will be then use to create the map, compute the results and generate the log files from rtabmap database
 - `back.sh` will run the trajectory evaluation scripts and `map.sh` and move all the files to the desired folder
 
-The groundtruths for the considered environments \[Cafe and AWS's small house\] (generated with the pgm_map_creator) are in `src/pgm_map_creator/maps`.
+**Please check those scripts for pre-fixed paths and correct them (quick tip search for `ebonetto` or `mnt`)**
 
+The groundtruths for the considered environments \[Cafe and AWS's small house\] (generated with the pgm_map_creator) are in `src/pgm_map_creator/maps`.
 
 The suggested folder structure is as follow (since this is the one used in scripts and notebook):
 - Test/
