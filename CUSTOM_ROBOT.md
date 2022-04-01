@@ -1,0 +1,8 @@
+This algorithm has been tested thoroughly based on our hw architecture fully simulated inside the Gazebo environment.
+We developed a custom Gazebo's [plugin](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_gazebo_plugin/src/robotino_plugin.cpp) to generate odometry and movement of the three-wheel omnidirectional robot system so that we have correct joint movements and representation of the robot real movements.
+If you want to test this algorithm on your own system there are some changes you might want to apply:
+- camera, IMU, laser scan and odom topics [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/launch/mapping.launch), [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/launch/move_base.launch), [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_fsm/src/robotino_fsm_node.cpp) and [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_mpc/cfg/nmpc.yaml)
+- camera configuration [here](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_simulations/config/camera.yaml)
+- Frontier size in the `active_slam` package
+- EKF's [settings](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_description/launch/robotino.launch) and **topics**: note that the system relies on two odometry sources, one for the camera wrt the base and one for the base. The system will indeed need both topics to be published to work (i.e. the FSM and the MPC relies on synchronization of odom messages from these two sources).
+- Other things like `move_base` setting and the `mpc` controller
