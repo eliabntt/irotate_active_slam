@@ -19,7 +19,7 @@ That was a huge limitation. Therefore, with the use of an independent camera rot
 
 This project has been developed within [Robot Perception Group](https://ps.is.tue.mpg.de/research_fields/robot-perception-group) at the Max Planck Institute for Intelligent Systems, Tübingen.
 
-#### The published papers can be found in open acces: [iRotate](https://arxiv.org/abs/2103.11641) and [Independent Camera](https://ieeexplore.ieee.org/document/9568791) -- please [cite]() us if you find this work useful
+#### The published papers can be found in open acces: [iRotate](https://arxiv.org/abs/2103.11641) and [Independent Camera](https://ieeexplore.ieee.org/document/9568791) -- please [cite](https://github.com/eliabntt/irotate_active_slam/blob/master/README.md#Citation) us if you find this work useful
 
 As a bonus, [here](https://github.com/eliabntt/gazebo_three_wheel_omni_plugin) you can find a gazebo controller for omnidirectional robots.
 
