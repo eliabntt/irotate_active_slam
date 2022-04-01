@@ -1,0 +1,28 @@
+There are many prerequisites. Please follow instructions on the linked webpages on how to install them.
+- Clone this repository. 
+     - **IMPORTANT: move the content of the `src` folder in the `src` folder of your catkin workspace**
+- Update CMake to the latest version: follow [this](https://apt.kitware.com/). Tested with CMake 3.16.5
+- OpenCV with contrib and non-free enabled. Tested with 3.4.3. Works with 4.* but results were not checked.
+- Install ros-melodic-desktop-full following [this](http://wiki.ros.org/melodic/Installation/Ubuntu)
+  - **If you want to use ros-NOETIC remember to switch branch**
+- Install ros prerequisites `sh ros-req.sh`
+- \[optional\] (For the notebook visualization) Install python3, pip3 and virtualenv
+    - create a virtualenv with python3.6
+    - Install in the virtualenv with `pip install -r requirements.txt` the required [packages](https://github.com/eliabntt/active_v_slam/blob/master/requirements.txt)
+    - Run `jupyter labextension install jupyterlab-plotly` (if nodejs gives problems run `curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash – && sudo apt-get install nodejs`)
+- Install ACADO from [sources](https://acado.github.io/install_linux.html) and follow [this](https://github.com/eliabntt/active_v_slam/blob/master/src/robotino_mpc/solver_made_from_cpp/README.md) README
+- Install [GTSAM4.x](https://gtsam.org/get_started/) either from sources or APT. **NOTE** If building from sources be sure that march_native is [off](https://github.com/rvaser/spoa/issues/20), or, as an alternative, you can have g2o+PCL+GTSAM all built from sources with such option enabled. If problems arise during the compilation of RTABMap check [this](https://github.com/introlab/rtabmap_ros/issues/291)
+- Install [libpointmatcher](https://github.com/ethz-asl/libpointmatcher/blob/master/doc/CompilationUbuntu.md)
+- RTABMap:
+    - `git clone https://github.com/introlab/rtabmap && cd rtabmap`
+    - `git checkout 39f68c44c`
+    - copy the edited rtabmap files into the cloned folder `cp <your-active_v_slam>/rtabmap-edited/* <your-rtabmap>/corelib/src`
+    - build and install rtabmap. **NOTE** Be careful that the end of `cmake ..` must be "Build files have been written to ..." w/o ANY _subsequent_ warnings. GTSAM, g2o, OpenCV should be automatically recognized and enabled for the building.
+    - Test the installation by running `rtabmap` command in a console. A preemptive `sudo ldconfig` might be necessary.
+    - *The latest version of RTABMap could also be used. It is not fully tested. In that case you need to update `rtabmap-ros` in the `src` folder accordingly and merge the changes. An example of such work has been carried out in the `noetic` branch.*  
+- Gazebo: 
+    - Launch gazebo at least once so that folders are created.
+    - Get the models
+        - \[Option 1\] Download and follow instructions for models from [here](https://github.com/eliabntt/gazebo_models)
+        - \[Option 2\] download models from 3dgems with `sh 3dgems.sh` -- **note** it seems down -- and from [AWS](https://github.com/aws-robotics/aws-robomaker-small-house-world/tree/ros1/models) and place them in `~/.gazebo/models`
+- Catkin make (both `catkin_build` or `catkin make` works) on the main project folder
