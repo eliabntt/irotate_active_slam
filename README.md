@@ -86,18 +86,30 @@ If you find this work useful, or you use part of the developed code, please cite
 
 **Note: the following will be updated soon with the RAS - Elsevier citation **
 ```
-@misc{bonetto2021irotate,
-    title={iRotate: Active Visual SLAM for Omnidirectional Robots},
-    author={Elia Bonetto and Pascal Goldschmid and Michael Pabst and Michael J. Black and Aamir Ahmad},
-    year={2021},
-    eprint={2103.11641},
-    archivePrefix={arXiv},
-    primaryClass={cs.RO}
+@article{BONETTO2022104102,
+title = {iRotate: Active visual SLAM for omnidirectional robots},
+journal = {Robotics and Autonomous Systems},
+pages = {104102},
+year = {2022},
+issn = {0921-8890},
+doi = {https://doi.org/10.1016/j.robot.2022.104102},
+url = {https://www.sciencedirect.com/science/article/pii/S0921889022000550},
+author = {Elia Bonetto and Pascal Goldschmid and Michael Pabst and Michael J. Black and Aamir Ahmad},
+keywords = {View planning for SLAM, Vision-based navigation, SLAM}
 }
 ```
 
 ```
-@INPROCEEDINGS{9568791,  author={Bonetto, Elia and Goldschmid, Pascal and Black, Michael J. and Ahmad, Aamir},  booktitle={2021 European Conference on Mobile Robots (ECMR)},   title={Active Visual SLAM with Independently Rotating Camera},   year={2021},  volume={},  number={},  pages={1-8},  doi={10.1109/ECMR50962.2021.9568791}}
+@INPROCEEDINGS{9568791,  
+author={Bonetto, Elia and Goldschmid, Pascal and Black, Michael J. and Ahmad, Aamir},  
+booktitle={2021 European Conference on Mobile Robots (ECMR)},   
+title={Active Visual SLAM with Independently Rotating Camera},   
+year={2021},  
+volume={},  
+number={},  
+pages={1-8},  
+doi={10.1109/ECMR50962.2021.9568791}
+}
 ```
 ## License
 
