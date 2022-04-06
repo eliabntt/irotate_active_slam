@@ -84,7 +84,6 @@ If you want to keep track of your own results you may want to check [this](https
 
 If you find this work useful, or you use part of the developed code, please cite us. 
 
-**Note: the following will be updated soon with the RAS - Elsevier citation **
 ```
 @article{BONETTO2022104102,
 title = {iRotate: Active visual SLAM for omnidirectional robots},
