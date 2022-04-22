@@ -13,7 +13,7 @@ This repository contains the code of **iRotate**, a three-layered active V-SLAM 
 
 It combines concept of long term planning (frontier exploration), viewpoint refinement (Next-Best-View, Receiding Horizon planners), and online refinement (feature tracking) in a seemless and structured framework. This results in a continuos robot's heading refinement that is always based on the latest map's entropy and feature information. Thanks to that, we are able to fully explore an environment with paths that are up to **39%** shorter!
 
-To allow a continuous rotational movement the system was first developed with an omnidirectional platform, our _Robotino_, that allowed us to avoid kinematic constraints and a free 6DOF planning.
+To allow a continuous rotational movement the system was first developed with an omnidirectional platform, our _Robotino_, that allowed us to avoid kinematic constraints and a free 3DOF planning.
 
 That was a huge limitation. Therefore, with the use of an independent camera rotation mechanism, we extended our algorithm to different non-omnidirectional ground robots.
 
