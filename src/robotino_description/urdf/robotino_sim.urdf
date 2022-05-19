@@ -7,49 +7,8 @@
   <!-- 20 -->
   <!-- Space btw top of beam and the each joint -->
   <!-- Space btw top of beam and the each joint -->
-  <link name="world"/>
-  <joint name="joint_x" type="prismatic">
-    <parent link="world"/>
-    <child link="int_link_xy"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <axis xyz="1 0 0"/>
-    <limit effort="10" lower="-1000" upper="1000" velocity="10"/>
-  </joint>
-  <link name="int_link_xy">
-    <inertial>
-      <mass value="0.1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
-    </inertial>
-  </link>
-  <joint name="joint_y" type="prismatic">
-    <parent link="int_link_xy"/>
-    <child link="int_link_yw"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="10" lower="-1000" upper="1000" velocity="10"/>
-  </joint>
-  <link name="int_link_yw">
-    <inertial>
-      <mass value="0.1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
-    </inertial>
-  </link>
-  <joint name="revolute_w" type="continuous">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="int_link_yw"/>
-    <child link="base_link"/>
-    <axis xyz="0 0 1"/>
-  </joint>
-  <!-- base_link -->
-  <link name="base_link"/>
-  <joint name="base_body_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="base_body_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-  </joint>
-  <link name="base_body_link">
+
+  <link name="base_link">
     <inertial>
       <mass value="0.5"/>
       <origin xyz="0 0 0.05"/>
@@ -61,17 +20,15 @@
         <mesh filename="package://robotino_description/meshes/parts/robotino_base.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
-    <collision>
-      <origin rpy="0 0 1.570795" xyz="0 0 0"/>
+
+     <collision>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/parts/robotino_base.stl" scale="0.01 0.01 0.01"/>
+        <box size="0 0 0"/>
       </geometry>
     </collision>
   </link>
-  <gazebo reference="base_link">
-    <material>Gazebo/White</material>
-    <turnGravityOff>false</turnGravityOff>
-  </gazebo>
+  
+
   <link name="wheel0_link">
     <inertial>
       <mass value="2"/>
@@ -84,21 +41,8 @@
         <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
-    <collision>
-      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
-      <geometry>
-        <cylinder length="0.04" radius="0.04"/>
-      </geometry>
-    </collision>
   </link>
-  <gazebo reference="wheel0_link">
-    <material>Gazebo/Yellow</material>
-    <turnGravityOff>false</turnGravityOff>
-    <kp value="1000000"/>
-    <kd value="1"/>
-    <mu2 value="0"/>
-    <mu1 value="0"/>
-  </gazebo>
+  
   <joint name="wheel0_joint" type="continuous">
     <origin rpy="0 0 1.04719666667" xyz="0.065 0.11 0.04"/>
     <axis xyz="-1 0 0"/>
@@ -117,21 +61,7 @@
         <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
-    <collision>
-      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
-      <geometry>
-        <cylinder length="0.04" radius="0.04"/>
-      </geometry>
-    </collision>
   </link>
-  <gazebo reference="wheel1_link">
-    <material>Gazebo/Yellow</material>
-    <turnGravityOff>false</turnGravityOff>
-    <kp value="1000000"/>
-    <kd value="1"/>
-    <mu2 value="0"/>
-    <mu1 value="0"/>
-  </gazebo>
   <joint name="wheel1_joint" type="continuous">
     <origin rpy="0 0 3.14159" xyz="-0.13 0 0.04"/>
     <axis xyz="1 0 0"/>
@@ -150,27 +80,14 @@
         <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
-    <collision>
-      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
-      <geometry>
-        <cylinder length="0.04" radius="0.04"/>
-      </geometry>
-    </collision>
   </link>
-  <gazebo reference="wheel2_link">
-    <material>Gazebo/Yellow</material>
-    <turnGravityOff>false</turnGravityOff>
-    <kp value="1000000"/>
-    <kd value="1"/>
-    <mu2 value="0"/>
-    <mu1 value="0"/>
-  </gazebo>
   <joint name="wheel2_joint" type="continuous">
     <origin rpy="0 0 -1.04719666667" xyz="0.065 -0.11 0.04"/>
     <axis xyz="-1 0 0"/>
     <parent link="base_link"/>
     <child link="wheel2_link"/>
   </joint>
+
   <link name="lasersensor_link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.00056497 7.11770000114844E-09 0.018756"/>
@@ -186,52 +103,14 @@
         <color rgba="0.64314 0.61569 0.6 1"/>
       </material>
     </visual>
-    <collision>
-      <origin rpy="1.5707963267949 0 0" xyz="0 0 -0.018756"/>
-      <geometry>
-        <mesh filename="package://robotino_description/lidar/meshes/lidar.STL"/>
-      </geometry>
-    </collision>
   </link>
-  <gazebo reference="lasersensor_link">
-    <material>Gazebo/Black</material>
-    <turnGravityOff>false</turnGravityOff>
-  </gazebo>
+
   <joint name="lasersensor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0 0 0.26"/>
-    <parent link="base_link"/>
+    <parent link="yaw_link"/>
     <child link="lasersensor_link"/>
   </joint>
-  <link name="pantilt_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="-0.00076068 0.053384 -0.00086946"/>
-      <mass value="0.17709"/>
-      <inertia ixx="0.022066" ixy="0.00017957" ixz="-1.0212E-05" iyy="0.016545" iyz="0.00019743" izz="0.022127"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://robotino_description/pantiltholder/meshes/camerabase_Link.STL"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://robotino_description/pantiltholder/meshes/camerabase_Link.STL"/>
-      </geometry>
-    </collision>
-  </link>
-  <gazebo reference="pantilt_link">
-    <turnGravityOff>false</turnGravityOff>
-  </gazebo>
-  <joint name="pantilt_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0 0.33"/>
-    <parent link="base_link"/>
-    <child link="pantilt_link"/>
-  </joint>
+
   <link name="pantiltring_link">
     <inertial>
       <origin rpy="0 0 0" xyz="4.0968E-16 -0.015 9.18454765366783E-19"/>
@@ -247,21 +126,36 @@
         <color rgba="0.79216 0.81961 0.93333 1"/>
       </material>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://robotino_description/ring/meshes/ring.STL"/>
-      </geometry>
-    </collision>
   </link>
-  <gazebo reference="pantiltring_link">
-    <turnGravityOff>false</turnGravityOff>
-  </gazebo>
   <joint name="pantiltring_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0 0 0.173"/>
-    <parent link="base_link"/>
+    <parent link="yaw_link"/>
     <child link="pantiltring_link"/>
   </joint>
+
+  <link name="pantilt_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.00076068 0.053384 -0.00086946"/>
+      <mass value="0.17709"/>
+      <inertia ixx="0.022066" ixy="0.00017957" ixz="-1.0212E-05" iyy="0.016545" iyz="0.00019743" izz="0.022127"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://robotino_description/pantiltholder/meshes/camerabase_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.79216 0.81961 0.93333 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="pantilt_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.0 0 0.157"/>
+    <parent link="pantiltring_link"/>
+    <child link="pantilt_link"/>
+  </joint>
+
   <link name="cameraholder_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0.08119 -9.6149E-11 -0.006335"/>
@@ -277,12 +171,6 @@
         <color rgba="0.79216 0.81961 0.93333 1"/>
       </material>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://robotino_description/pantiltholder/meshes/cameraholder_Link.STL"/>
-      </geometry>
-    </collision>
   </link>
   <joint name="cameraholder_joint" type="continuous">
     <origin rpy="0 0 0" xyz="0.0 0 0.32"/>
@@ -309,12 +197,6 @@
       </geometry>
       <material name="xsens-orange"/>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.057 0.041 0.024"/>
-      </geometry>
-    </collision>
     <inertial>
       <mass value="0"/>
       <origin xyz="0 0 0"/>
@@ -326,307 +208,5 @@
     <child link="imu_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
-  <material name="xsens-orange">
-    <color rgba="0.8862745098 0.56862745098 0.09019607843 1"/>
-  </material>
-  <!-- gazebo control -->
-  <gazebo reference="lasersensor_link">
-    <sensor name="head_hokuyo_sensor" type="ray">
-      <pose>0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
-      <update_rate>20</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <!-- <samples>720</samples> -->
-            <samples>300</samples>
-            <resolution>1</resolution>
-            <min_angle>-3.14159</min_angle>
-            <!-- -1.570796 -->
-            <max_angle>+3.14159</max_angle>
-            <!-- 1.570796 -->
-          </horizontal>
-        </scan>
-        <range>
-          <min>0.10</min>
-          <max>12.0</max>
-          <resolution>0.01</resolution>
-        </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.01</stddev>
-        </noise>
-      </ray>
-      <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_head_hokuyo_controller">
-        <topicName>robot/laser/scan</topicName>
-        <robotNamespace>/</robotNamespace>
-        <frameName>lasersensor_link</frameName>
-      </plugin>
-    </sensor>
-  </gazebo>
-  <gazebo>
-    <!--plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
-                <commandTopic>cmd_vel</commandTopic>
-                <odometryTopic>odom</odometryTopic>
-                <odometryFrame>odom</odometryFrame>
-                <odometryRate>20</odometryRate>
-                <robotBaseFrame>base_link</robotBaseFrame>
-            </plugin-->
-    <!--plugin name="robotino_odometry" filename="libgazebo_ros_p3d.so">
-              <alwaysOn>true</alwaysOn>
-              <updateRate>100.0</updateRate>
-              <bodyName>base_link</bodyName>
-              <topicName>odom</topicName>
-              <gaussianNoise>0.0</gaussianNoise>
-              <frameName>map</frameName>
-              <xyzOffsets>0 0 0</xyzOffsets>
-              <rpyOffsets>0 0 0</rpyOffsets>
-            </plugin-->
-    <plugin filename="librobotino_plugin.so" name="robotino_plugin">
-      <jointName>wheel0_joint, wheel1_joint, wheel2_joint, joint_x, joint_y, revolute_w, cameraholder_joint
-                </jointName>
-    </plugin>
-  </gazebo>
-  <gazebo>
-    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
-      <robotNamespace>/rrbot</robotNamespace>
-    </plugin>
-  </gazebo>
-  <!-- imu -->
-  <gazebo>
-    <plugin filename="libhector_gazebo_ros_imu.so" name="imu_controller">
-      <updateRate>50.0</updateRate>
-      <bodyName>base_link</bodyName>
-      <topicName>imu/data</topicName>
-      <serviceName>imu_service</serviceName>
-      <frame_id>odom</frame_id>
-      <alwaysOn>true</alwaysOn>
-      <accelDrift>0.005 0.005 0.005</accelDrift>
-      <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
-      <rateDrift>0.005 0.005 0.005 </rateDrift>
-      <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
-      <headingDrift>0.005</headingDrift>
-      <headingGaussianNoise>0.005</headingGaussianNoise>
-    </plugin>
-  </gazebo>
-  <material name="aluminum">
-    <color rgba="0.5 0.5 0.5 1"/>
-  </material>
-  <!-- camera body, with origin at bottom screw mount -->
-  <joint name="camera_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="cameraholder_link"/>
-    <child link="camera_bottom_screw_frame"/>
-  </joint>
-  <link name="camera_bottom_screw_frame"/>
-  <joint name="camera_link_joint" type="fixed">
-    <origin rpy="1.57079632679 0 0" xyz="0.0175 0 0.0125"/>
-    <!--origin xyz="0 ${d435_cam_depth_py} ${d435_cam_depth_pz}" rpy="0 0 0"/-->
-    <parent link="camera_bottom_screw_frame"/>
-    <child link="camera_link"/>
-  </joint>
-  <link name="camera_link">
-    <visual>
-      <origin rpy="1.57079632679 0 1.57079632679" xyz="0.0149 -0.0175 0"/>
-      <geometry>
-        <mesh filename="package://realsense2_description/meshes/d435.dae"/>
-      </geometry>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 -0.0175 0"/>
-      <geometry>
-        <box size="0.02505 0.09 0.025"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <!-- The following are not reliable values, and should not be used for modeling -->
-      <mass value="0.564"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257"/>
-    </inertial>
-  </link>
-  <!-- camera depth joints and links -->
-  <joint name="camera_depth_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="camera_link"/>
-    <child link="camera_depth_frame"/>
-  </joint>
-  <link name="camera_depth_frame"/>
-  <joint name="camera_depth_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="camera_depth_frame"/>
-    <child link="camera_depth_optical_frame"/>
-  </joint>
-  <link name="camera_depth_optical_frame"/>
-  <!-- camera left IR joints and links -->
-  <joint name="camera_left_ir_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.0 0"/>
-    <parent link="camera_depth_frame"/>
-    <child link="camera_left_ir_frame"/>
-  </joint>
-  <link name="camera_left_ir_frame"/>
-  <joint name="camera_left_ir_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="camera_left_ir_frame"/>
-    <child link="camera_left_ir_optical_frame"/>
-  </joint>
-  <link name="camera_left_ir_optical_frame"/>
-  <!-- camera right IR joints and links -->
-  <joint name="camera_right_ir_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 -0.05 0"/>
-    <parent link="camera_depth_frame"/>
-    <child link="camera_right_ir_frame"/>
-  </joint>
-  <link name="camera_right_ir_frame"/>
-  <joint name="camera_right_ir_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="camera_right_ir_frame"/>
-    <child link="camera_right_ir_optical_frame"/>
-  </joint>
-  <link name="camera_right_ir_optical_frame"/>
-  <!-- camera color joints and links -->
-  <joint name="camera_color_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.015 0"/>
-    <parent link="camera_depth_frame"/>
-    <child link="camera_color_frame"/>
-  </joint>
-  <link name="camera_color_frame"/>
-  <joint name="camera_color_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="camera_color_frame"/>
-    <child link="camera_color_optical_frame"/>
-  </joint>
-  <link name="camera_color_optical_frame"/>
-  <gazebo reference="camera_link">
-    <self_collide>0</self_collide>
-    <enable_wind>0</enable_wind>
-    <kinematic>0</kinematic>
-    <gravity>1</gravity>
-    <!--<mu>1</mu>-->
-    <mu2>1</mu2>
-    <fdir1>0 0 0</fdir1>
-    <!--<slip1>0</slip1>
-      <slip2>0</slip2>-->
-    <kp>1e+13</kp>
-    <kd>1</kd>
-    <!--<max_vel>0.01</max_vel>
-      <min_depth>0</min_depth>-->
-    <sensor name="cameracolor" type="camera">
-      <camera name="camera">
-        <horizontal_fov>1.4870205227</horizontal_fov>
-        <!--69.4-->
-        <image>
-          <width>1280</width>
-          <!--1920*1080-->
-          <height>720</height>
-          <format>RGB_INT8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>100</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <always_on>1</always_on>
-      <update_rate>30</update_rate>
-      <visualize>1</visualize>
-    </sensor>
-    <sensor name="cameraired1" type="camera">
-      <camera name="camera">
-        <horizontal_fov>1.4870205227</horizontal_fov>
-        <image>
-          <width>1280</width>
-          <height>720</height>
-          <format>L_INT8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>100</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.05</stddev>
-        </noise>
-      </camera>
-      <always_on>0</always_on>
-      <update_rate>90</update_rate>
-      <visualize>0</visualize>
-    </sensor>
-    <sensor name="cameraired2" type="camera">
-      <camera name="camera">
-        <horizontal_fov>1.4870205227</horizontal_fov>
-        <image>
-          <width>1280</width>
-          <height>720</height>
-          <format>L_INT8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>100</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.05</stddev>
-        </noise>
-      </camera>
-      <always_on>0</always_on>
-      <update_rate>90</update_rate>
-      <visualize>0</visualize>
-    </sensor>
-    <sensor name="cameradepth" type="depth">
-      <camera name="camera">
-        <horizontal_fov>1.4870205227</horizontal_fov>
-        <image>
-          <width>1280</width>
-          <height>720</height>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>100</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.100</stddev>
-        </noise>
-      </camera>
-      <always_on>1</always_on>
-      <update_rate>30</update_rate>
-      <visualize>0</visualize>
-    </sensor>
-  </gazebo>
-  <gazebo>
-    <plugin filename="librealsense_gazebo_plugin.so" name="camera">
-      <prefix>camera</prefix>
-      <depthUpdateRate>60.0</depthUpdateRate>
-      <colorUpdateRate>60.0</colorUpdateRate>
-      <infraredUpdateRate>0.0</infraredUpdateRate>
-      <depthTopicName>depth/image_raw</depthTopicName>
-      <depthCameraInfoTopicName>depth/camera_info</depthCameraInfoTopicName>
-      <colorTopicName>color/image_raw</colorTopicName>
-      <colorCameraInfoTopicName>color/camera_info</colorCameraInfoTopicName>
-      <infrared1TopicName>infra1/image_raw</infrared1TopicName>
-      <infrared1CameraInfoTopicName>infra1/camera_info</infrared1CameraInfoTopicName>
-      <infrared2TopicName>infra2/image_raw</infrared2TopicName>
-      <infrared2CameraInfoTopicName>infra2/camera_info</infrared2CameraInfoTopicName>
-      <colorOpticalframeName>camera_color_optical_frame</colorOpticalframeName>
-      <depthOpticalframeName>camera_depth_optical_frame</depthOpticalframeName>
-      <infrared1OpticalframeName>camera_left_ir_optical_frame</infrared1OpticalframeName>
-      <infrared2OpticalframeName>camera_right_ir_optical_frame</infrared2OpticalframeName>
-      <rangeMinDepth>0.2</rangeMinDepth>
-      <rangeMaxDepth>3.0</rangeMaxDepth>
-      <pointCloud>False</pointCloud>
-      <pointCloudTopicName>depth/points</pointCloudTopicName>
-      <pointCloudCutoff>0.5</pointCloudCutoff>
-      <pointCloudCutoffMax>9.0</pointCloudCutoffMax>
-    </plugin>
-  </gazebo>
-</robot>
 
+</robot>

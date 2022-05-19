@@ -33,8 +33,8 @@ camera_best_heading::getLoS(const octomap::OcTree &octree, const cv::Point3f &st
     return false;
 }
 
-void camera_best_heading::filter_features(cv::Point3f mpc_pose, std::multimap<int, cv::Point3f> &kp3D,
-                                          std::multimap<int, cv::KeyPoint> &kpInfo,
+void camera_best_heading::filter_features(cv::Point3f mpc_pose, std::vector<cv::Point3f> &kp3D,
+                                          std::vector<cv::KeyPoint> &kpInfo,
                                           std::vector<double> &margins) {
     double min_angle = 2 * M_PI;
     double max_angle = -2 * M_PI;
@@ -44,33 +44,33 @@ void camera_best_heading::filter_features(cv::Point3f mpc_pose, std::multimap<in
     auto it_info = kpInfo.begin();
 
     for (auto it_3D = kp3D.begin(); it_3D != kp3D.end();) {
-        if (std::isnan(it_3D->second.x) || std::isnan(it_3D->second.y) ||
-            std::isnan(it_3D->second.z)) {
+        if (std::isnan(it_3D->x) || std::isnan(it_3D->y) ||
+            std::isnan(it_3D->z)) {
             it_info = kpInfo.erase(it_info);
             it_3D = kp3D.erase(it_3D);
         } else {
-            p.position.x = it_3D->second.x;
-            p.position.y = it_3D->second.y;
-            p.position.z = it_3D->second.z;
+            p.position.x = it_3D->x;
+            p.position.y = it_3D->y;
+            p.position.z = it_3D->z;
             tf2::doTransform(p, p, transformStamped);
-            it_3D->second.x = p.position.x;
-            it_3D->second.y = p.position.y;
-            it_3D->second.z = p.position.z;
+            it_3D->x = p.position.x;
+            it_3D->y = p.position.y;
+            it_3D->z = p.position.z;
 
 
             double dist = std::pow(
-                    (it_3D->second.x - mpc_pose.x) * (it_3D->second.x - mpc_pose.x) +
-                    (it_3D->second.y - mpc_pose.y) * (it_3D->second.y - mpc_pose.y) +
-                    (it_3D->second.z - mpc_pose.z) * (it_3D->second.z - mpc_pose.z), 0.5);
+                    (it_3D->x - mpc_pose.x) * (it_3D->x - mpc_pose.x) +
+                    (it_3D->y - mpc_pose.y) * (it_3D->y - mpc_pose.y) +
+                    (it_3D->z - mpc_pose.z) * (it_3D->z - mpc_pose.z), 0.5);
 
 
             if (dist > max_feat_dist ||
-                !getLoS(*ocTree_, mpc_pose, cv::Point3f(it_3D->second.x, it_3D->second.y, it_3D->second.z),
+                !getLoS(*ocTree_, mpc_pose, cv::Point3f(it_3D->x, it_3D->y, it_3D->z),
                         max_feat_dist)) {
                 it_info = kpInfo.erase(it_info);
                 it_3D = kp3D.erase(it_3D);
             } else {
-                double angle = std::atan2(it_3D->second.y - mpc_pose.y, it_3D->second.x - mpc_pose.x);
+                double angle = std::atan2(it_3D->y - mpc_pose.y, it_3D->x - mpc_pose.x);
                 angle < 0 ? angle += 2 * M_PI : angle;
 
                 if (angle < min_angle) {
@@ -110,12 +110,12 @@ std_msgs::Float32MultiArray camera_best_heading::getPrediction() {
     margins.resize(2);
 
     // consider only the features that are near enough, in the FOV and not occluded
-    std::multimap<int, cv::Point3f> kp3D = signatures.at(last_id).getWords3();
+    std::vector<cv::Point3f> kp3D = signatures.at(last_id).getWords3();
     if (kp3D.empty()) {
         ROS_WARN("kp3D is empty");
         return std_msgs::Float32MultiArray{};
     }
-    std::multimap<int, cv::KeyPoint> kpInfo = signatures.at(last_id).getWords();
+    std::vector<cv::KeyPoint> kpInfo = signatures.at(last_id).getWordsKpts();
 
     filter_features(targetPose, kp3D, kpInfo, margins);
 
@@ -133,8 +133,8 @@ std_msgs::Float32MultiArray camera_best_heading::getPrediction() {
 }
 
 
-std::vector<int> camera_best_heading::find_best_pov(const cv::Point3f &mpc_pose, std::multimap<int, cv::Point3f> &kp3D,
-                                                    std::multimap<int, cv::KeyPoint> &kpInfo,
+std::vector<int> camera_best_heading::find_best_pov(const cv::Point3f &mpc_pose, std::vector<cv::Point3f> &kp3D,
+                                                    std::vector<cv::KeyPoint> &kpInfo,
                                                     std::vector<double> &margins, double delta) {
 
     std::vector<std::pair<int, float>> features;
@@ -151,9 +151,9 @@ std::vector<int> camera_best_heading::find_best_pov(const cv::Point3f &mpc_pose,
     for (auto it_3D = kp3D.begin(); it_3D != kp3D.end();) {
 
         int angle = 0;
-        if (!std::isnan(std::atan2(it_3D->second.y - mpc_pose.y, it_3D->second.x - mpc_pose.x))) {
+        if (!std::isnan(std::atan2(it_3D->y - mpc_pose.y, it_3D->x - mpc_pose.x))) {
             angle = (int) std::round(
-                    std::atan2(it_3D->second.y - mpc_pose.y, it_3D->second.x - mpc_pose.x) * (180 / M_PI));
+                    std::atan2(it_3D->y - mpc_pose.y, it_3D->x - mpc_pose.x) * (180 / M_PI));
             min_angle = std::min(angle, min_angle);
         } else {
             ++it_info;
@@ -163,10 +163,10 @@ std::vector<int> camera_best_heading::find_best_pov(const cv::Point3f &mpc_pose,
         angle < 0 ? angle += 360 : angle;
         if (zero_inside) {
             if (angle < fov) {
-                features.emplace_back(std::pair<int, float>(angle + 360, it_info->second.response));
+                features.emplace_back(std::pair<int, float>(angle + 360, it_info->response));
             }
         }
-        features.emplace_back(std::pair<int, float>(angle, it_info->second.response));
+        features.emplace_back(std::pair<int, float>(angle, it_info->response));
         ++it_info;
         ++it_3D;
     }

@@ -28,10 +28,20 @@ int32 memoryUsage # MB
 float32 gravityRollError
 float32 gravityPitchError
 
+# Local bundle camera ids
+int32[] localBundleIds
+
+# Local bundle camera models
+sensor_msgs/CameraInfo[] localBundleModels
+geometry_msgs/Transform[] localBundleModelTransforms
+
+# Local bundle camera poses
+geometry_msgs/Pose[] localBundlePoses
+
 geometry_msgs/Transform transform
 geometry_msgs/Transform transformFiltered
 geometry_msgs/Transform transformGroundTruth
-geometry_msgs/Transform guessVelocity
+geometry_msgs/Transform guess
 
 # 0=F2M, 1=F2F
 int32 type
@@ -47,9 +57,8 @@ int32[] wordInliers
 int32[] localMapKeys
 Point3f[] localMapValues
 
-# compressed local scan map data
-# use rtabmap::util3d::uncompressData() from "rtabmap/core/util3d.h"
-uint8[] localScanMap
+# local scan map data
+sensor_msgs/PointCloud2 localScanMap
 
 # F2F odometry
 #   std::vector<cv::Point2f> refCorners;

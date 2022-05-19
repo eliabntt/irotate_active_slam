@@ -1,12 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotino_camera_heading)
 
-#add_compile_options("-std=c++11")
-
-MESSAGE( STATUS "CMAKE_SYSTEM_VERSION: " ${CMAKE_SYSTEM_VERSION} )
-
-#set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_compile_options("-std=c++11")
 
 find_package(catkin REQUIRED COMPONENTS
         nav_msgs

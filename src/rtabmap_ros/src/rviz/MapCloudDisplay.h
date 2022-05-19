@@ -119,6 +119,7 @@ public:
 	rviz::FloatProperty* cloud_filter_ceiling_height_;
 	rviz::FloatProperty* node_filtering_radius_;
 	rviz::FloatProperty* node_filtering_angle_;
+	rviz::StringProperty * download_namespace;
 	rviz::BoolProperty* download_map_;
 	rviz::BoolProperty* download_graph_;
 
@@ -134,6 +135,7 @@ private Q_SLOTS:
 	void setXyzTransformerOptions( EnumProperty* prop );
 	void setColorTransformerOptions( EnumProperty* prop );
 	void updateCloudParameters();
+	void downloadNamespaceChanged();
 	void downloadMap();
 	void downloadGraph();
 
@@ -145,6 +147,7 @@ protected:
 	virtual void processMessage( const rtabmap_ros::MapDataConstPtr& cloud );
 
 private:
+	void downloadMap(bool graphOnly);
 	void processMapData(const rtabmap_ros::MapData& map);
 
 	/**
@@ -165,14 +168,21 @@ private:
 private:
 	ros::AsyncSpinner spinner_;
 	ros::CallbackQueue cbqueue_;
+	ros::Publisher republishNodeDataPub_;
 
 	std::map<int, CloudInfoPtr> cloud_infos_;
 
 	std::map<int, CloudInfoPtr> new_cloud_infos_;
 	boost::mutex new_clouds_mutex_;
 
+	std::set<int> nodeDataReceived_;
+	bool fromScan_;
+
 	std::map<int, rtabmap::Transform> current_map_;
 	boost::mutex current_map_mutex_;
+	bool current_map_updated_;
+
+	int lastCloudAdded_;
 
 	struct TransformerInfo
 	{

@@ -63,7 +63,8 @@ public:
 		rtabmap_ros::OdometryROS(true, true, false),
 		approxSync_(0),
 		exactSync_(0),
-		queueSize_(5)
+		queueSize_(5),
+		keepColor_(false)
 	{
 	}
 
@@ -87,13 +88,19 @@ private:
 
 		bool approxSync = false;
 		bool subscribeRGBD = false;
+		double approxSyncMaxInterval = 0.0;
 		pnh.param("approx_sync", approxSync, approxSync);
+		pnh.param("approx_sync_max_interval", approxSyncMaxInterval, approxSyncMaxInterval);
 		pnh.param("queue_size", queueSize_, queueSize_);
 		pnh.param("subscribe_rgbd", subscribeRGBD, subscribeRGBD);
+		pnh.param("keep_color", keepColor_, keepColor_);
 
 		NODELET_INFO("StereoOdometry: approx_sync = %s", approxSync?"true":"false");
+		if(approxSync)
+			NODELET_INFO("StereoOdometry: approx_sync_max_interval = %f", approxSyncMaxInterval);
 		NODELET_INFO("StereoOdometry: queue_size = %d", queueSize_);
 		NODELET_INFO("StereoOdometry: subscribe_rgbd = %s", subscribeRGBD?"true":"false");
+		NODELET_INFO("StereoOdometry: keep_color = %s", keepColor_?"true":"false");
 
 		std::string subscribedTopicsMsg;
 		if(subscribeRGBD)
@@ -124,6 +131,8 @@ private:
 			if(approxSync)
 			{
 				approxSync_ = new message_filters::Synchronizer<MyApproxSyncPolicy>(MyApproxSyncPolicy(queueSize_), imageRectLeft_, imageRectRight_, cameraInfoLeft_, cameraInfoRight_);
+				if(approxSyncMaxInterval>0.0)
+					approxSync_->setMaxIntervalDuration(ros::Duration(approxSyncMaxInterval));
 				approxSync_->registerCallback(boost::bind(&StereoOdometry::callback, this, _1, _2, _3, _4));
 			}
 			else
@@ -133,9 +142,10 @@ private:
 			}
 
 
-			subscribedTopicsMsg = uFormat("\n%s subscribed to (%s sync):\n   %s \\\n   %s \\\n   %s \\\n   %s",
+			subscribedTopicsMsg = uFormat("\n%s subscribed to (%s sync%s):\n   %s \\\n   %s \\\n   %s \\\n   %s",
 					getName().c_str(),
 					approxSync?"approx":"exact",
+					approxSync&&approxSyncMaxInterval!=0.0?uFormat(", max interval=%fs", approxSyncMaxInterval).c_str():"",
 					imageRectLeft_.getTopic().c_str(),
 					imageRectRight_.getTopic().c_str(),
 					cameraInfoLeft_.getTopic().c_str(),
@@ -165,13 +175,15 @@ private:
 		callbackCalled();
 		if(!this->isPaused())
 		{
-			if(!(imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
+			if(!(imageRectLeft->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1) ==0 ||
+				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO16) ==0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::BGR8) == 0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::RGB8) == 0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::BGRA8) == 0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::RGBA8) == 0) ||
-				!(imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
+				!(imageRectRight->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1) ==0 ||
+				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
 				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO16) ==0 ||
 				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::BGR8) == 0 ||
 				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::RGB8) == 0 ||
@@ -191,6 +203,18 @@ private:
 				return;
 			}
 
+			double stampDiff = fabs(imageRectLeft->header.stamp.toSec() - imageRectRight->header.stamp.toSec());
+			if(stampDiff > 0.010)
+			{
+				NODELET_WARN("The time difference between left and right frames is "
+						"high (diff=%fs, left=%fs, right=%fs). If your left and right cameras are hardware "
+						"synchronized, use approx_sync:=false. Otherwise, you may want "
+						"to set approx_sync_max_interval lower than 0.01s to reject spurious bad synchronizations.",
+						stampDiff,
+						imageRectLeft->header.stamp.toSec(),
+						imageRectRight->header.stamp.toSec());
+			}
+
 			int quality = -1;
 			if(imageRectLeft->data.size() && imageRectRight->data.size())
 			{
@@ -205,7 +229,20 @@ private:
 							cameraInfoLeft->header.stamp);
 					if(stereoTransform.isNull())
 					{
-						NODELET_ERROR("Parameter %s is false but we cannot get TF between the two cameras!", Parameters::kRtabmapImagesAlreadyRectified().c_str());
+						NODELET_ERROR("Parameter %s is false but we cannot get TF between the two cameras! (between frames %s and %s)",
+								Parameters::kRtabmapImagesAlreadyRectified().c_str(),
+								cameraInfoRight->header.frame_id.c_str(),
+								cameraInfoLeft->header.frame_id.c_str());
+						return;
+					}
+					else if(stereoTransform.isIdentity())
+					{
+						NODELET_ERROR("Parameter %s is false but we cannot get a valid TF between the two cameras! "
+								"Identity transform returned between left and right cameras. Verify that if TF between "
+								"the cameras is valid: \"rosrun tf tf_echo %s %s\".",
+								Parameters::kRtabmapImagesAlreadyRectified().c_str(),
+								cameraInfoRight->header.frame_id.c_str(),
+								cameraInfoLeft->header.frame_id.c_str());
 						return;
 					}
 				}
@@ -261,9 +298,13 @@ private:
 						shown = true;
 					}
 				}
-
-				cv_bridge::CvImagePtr ptrImageLeft = cv_bridge::toCvCopy(imageRectLeft, "mono8");
-				cv_bridge::CvImagePtr ptrImageRight = cv_bridge::toCvCopy(imageRectRight, "mono8");
+				cv_bridge::CvImagePtr ptrImageLeft = cv_bridge::toCvCopy(imageRectLeft,
+						imageRectLeft->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1)==0 ||
+						imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8)==0?"":
+							keepColor_ && imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO16)!=0?"bgr8":"mono8");
+				cv_bridge::CvImagePtr ptrImageRight = cv_bridge::toCvCopy(imageRectRight,
+						imageRectRight->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1)==0 ||
+						imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO8)==0?"":"mono8");
 
 				UTimer stepTimer;
 				//
@@ -275,7 +316,10 @@ private:
 						0,
 						rtabmap_ros::timestampFromROS(stamp));
 
-				this->processData(data, stamp);
+				std_msgs::Header header;
+				header.stamp = stamp;
+				header.frame_id = imageRectLeft->header.frame_id;
+				this->processData(data, header);
 			}
 			else
 			{
@@ -293,13 +337,15 @@ private:
 			cv_bridge::CvImageConstPtr imageRectLeft, imageRectRight;
 			rtabmap_ros::toCvShare(image, imageRectLeft, imageRectRight);
 
-			if(!(imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
+			if(!(imageRectLeft->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1) ==0 ||
+				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO16) ==0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::BGR8) == 0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::RGB8) == 0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::BGRA8) == 0 ||
 				 imageRectLeft->encoding.compare(sensor_msgs::image_encodings::RGBA8) == 0) ||
-				!(imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
+				!(imageRectRight->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1) ==0 ||
+				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO8) ==0 ||
 				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::MONO16) ==0 ||
 				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::BGR8) == 0 ||
 				  imageRectRight->encoding.compare(sensor_msgs::image_encodings::RGB8) == 0 ||
@@ -324,10 +370,57 @@ private:
 			int quality = -1;
 			if(!imageRectLeft->image.empty() && !imageRectRight->image.empty())
 			{
-				rtabmap::StereoCameraModel stereoModel = rtabmap_ros::stereoCameraModelFromROS(image->rgb_camera_info, image->depth_camera_info, localTransform);
-				if(stereoModel.baseline() <= 0)
+				bool alreadyRectified = true;
+				Parameters::parse(parameters(), Parameters::kRtabmapImagesAlreadyRectified(), alreadyRectified);
+				rtabmap::Transform stereoTransform;
+				if(!alreadyRectified)
 				{
-					NODELET_FATAL("The stereo baseline (%f) should be positive (baseline=-Tx/fx). We assume a horizontal left/right stereo "
+					stereoTransform = getTransform(
+							image->depth_camera_info.header.frame_id,
+							image->rgb_camera_info.header.frame_id,
+							image->rgb_camera_info.header.stamp);
+					if(stereoTransform.isNull())
+					{
+						NODELET_ERROR("Parameter %s is false but we cannot get TF between the two cameras!", Parameters::kRtabmapImagesAlreadyRectified().c_str());
+						return;
+					}
+				}
+
+				rtabmap::StereoCameraModel stereoModel = rtabmap_ros::stereoCameraModelFromROS(image->rgb_camera_info, image->depth_camera_info, localTransform);
+
+				if(stereoModel.baseline() == 0 && alreadyRectified)
+				{
+					stereoTransform = getTransform(
+							image->rgb_camera_info.header.frame_id,
+							image->depth_camera_info.header.frame_id,
+							image->rgb_camera_info.header.stamp);
+
+					if(!stereoTransform.isNull() && stereoTransform.x()>0)
+					{
+						static bool warned = false;
+						if(!warned)
+						{
+							ROS_WARN("Right camera info doesn't have Tx set but we are assuming that stereo images are already rectified (see %s parameter). While not "
+									"recommended, we used TF to get the baseline (%s->%s = %fm) for convenience (e.g., D400 ir stereo issue). It is preferred to feed "
+									"a valid right camera info if stereo images are already rectified. This message is only printed once...",
+									rtabmap::Parameters::kRtabmapImagesAlreadyRectified().c_str(),
+									image->depth_camera_info.header.frame_id.c_str(), image->rgb_camera_info.header.frame_id.c_str(), stereoTransform.x());
+							warned = true;
+						}
+						stereoModel = rtabmap::StereoCameraModel(
+								stereoModel.left().fx(),
+								stereoModel.left().fy(),
+								stereoModel.left().cx(),
+								stereoModel.left().cy(),
+								stereoTransform.x(),
+								stereoModel.localTransform(),
+								stereoModel.left().imageSize());
+					}
+				}
+
+				if(alreadyRectified && stereoModel.baseline() <= 0)
+				{
+					NODELET_ERROR("The stereo baseline (%f) should be positive (baseline=-Tx/fx). We assume a horizontal left/right stereo "
 							  "setup where the Tx (or P(0,3)) is negative in the right camera info msg.", stereoModel.baseline());
 					return;
 				}
@@ -345,20 +438,48 @@ private:
 					}
 				}
 
-				cv_bridge::CvImagePtr ptrImageLeft = cv_bridge::cvtColor(imageRectLeft, "mono8");
-				cv_bridge::CvImagePtr ptrImageRight = cv_bridge::cvtColor(imageRectRight, "mono8");
+				cv::Mat left;
+				if(imageRectLeft->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1) !=0 &&
+				   imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8) != 0)
+				{
+					if(keepColor_ && imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO16) != 0)
+					{
+						left = cv_bridge::cvtColor(imageRectLeft, "bgr8")->image;
+					}
+					else
+					{
+						left = cv_bridge::cvtColor(imageRectLeft, "mono8")->image;
+					}
+				}
+				else
+				{
+					left = imageRectLeft->image.clone();
+				}
+				cv::Mat right;
+				if(imageRectLeft->encoding.compare(sensor_msgs::image_encodings::TYPE_8UC1) !=0 &&
+				   imageRectLeft->encoding.compare(sensor_msgs::image_encodings::MONO8) != 0)
+				{
+					right = cv_bridge::cvtColor(imageRectRight, "mono8")->image;
+				}
+				else
+				{
+					right = imageRectRight->image.clone();
+				}
 
 				UTimer stepTimer;
 				//
 				UDEBUG("localTransform = %s", localTransform.prettyPrint().c_str());
 				rtabmap::SensorData data(
-						ptrImageLeft->image,
-						ptrImageRight->image,
+						left,
+						right,
 						stereoModel,
 						0,
 						rtabmap_ros::timestampFromROS(stamp));
 
-				this->processData(data, stamp);
+				std_msgs::Header header;
+				header.stamp = stamp;
+				header.frame_id = image->header.frame_id;
+				this->processData(data, header);
 			}
 			else
 			{
@@ -396,6 +517,7 @@ private:
 	message_filters::Synchronizer<MyExactSyncPolicy> * exactSync_;
 	ros::Subscriber rgbdSub_;
 	int queueSize_;
+	bool keepColor_;
 };
 
 PLUGINLIB_EXPORT_CLASS(rtabmap_ros::StereoOdometry, nodelet::Nodelet);

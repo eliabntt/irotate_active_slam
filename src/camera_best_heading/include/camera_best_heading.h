@@ -70,13 +70,13 @@ private:
     bool getLoS(const octomap::OcTree &octree, const cv::Point3f &start, const cv::Point3f &end,
                 double threshold_dist = 3);
 
-    void filter_features(cv::Point3f mpc_pose, std::multimap<int, cv::Point3f> &kp3D,
-                         std::multimap<int, cv::KeyPoint> &kpInfo,
-                         std::vector<double> &margins);
-
-    std::vector<int> find_best_pov(const cv::Point3f &mpc_pose, std::multimap<int, cv::Point3f> &kp3D,
-                                   std::multimap<int, cv::KeyPoint> &kpInfo, std::vector<double> &margins,
-                                   double delta);
+    void filter_features(cv::Point3f mpc_pose, std::vector<cv::Point3f> &kp3D,
+                                          std::vector<cv::KeyPoint> &kpInfo,
+                                          std::vector<double> &margins);
+    
+    std::vector<int> find_best_pov(const cv::Point3f &mpc_pose, std::vector<cv::Point3f> &kp3D,
+                                                    std::vector<cv::KeyPoint> &kpInfo,
+                                                    std::vector<double> &margins, double delta);
 
 };
 

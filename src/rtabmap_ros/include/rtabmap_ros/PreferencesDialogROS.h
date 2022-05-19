@@ -36,14 +36,19 @@ using namespace rtabmap;
 class PreferencesDialogROS : public PreferencesDialog
 {
 public:
-	PreferencesDialogROS(const QString & configFile);
+	PreferencesDialogROS(const QString & configFile, const std::string & rtabmapNodeName);
 	virtual ~PreferencesDialogROS();
 
 	virtual QString getIniFilePath() const;
 	virtual QString getTmpIniFilePath() const;
+	bool hasAllParameters();
+
+public slots:
+	void readRtabmapNodeParameters();
 
 protected:
 	virtual QString getParamMessage();
+	bool hasAllParameters(const ros::NodeHandle & nh, const rtabmap::ParametersMap & parameters);
 
 	virtual void readCameraSettings(const QString & filePath);
 	virtual bool readCoreSettings(const QString & filePath);
@@ -52,6 +57,7 @@ protected:
 
 private:
 	QString configFile_;
+	std::string rtabmapNodeName_;
 };
 
 #endif /* PREFERENCESDIALOGROS_H_ */

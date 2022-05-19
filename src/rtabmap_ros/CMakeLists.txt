@@ -28,12 +28,13 @@ find_package(octomap_msgs)
 find_package(apriltag_ros)
 find_package(rviz)
 find_package(find_object_2d)
+find_package(fiducial_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(RTABMap 0.20.2 REQUIRED)
+find_package(RTABMap 0.20.18 REQUIRED)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED QUIET COMPONENTS core calib3d imgproc highgui stitching optflow photo video OPTIONAL_COMPONENTS aruco xfeatures2d nonfree gpu cudafeatures2d)
 
 IF(RTABMAP_GUI)
 FIND_PACKAGE(PCL 1.7 REQUIRED QUIET COMPONENTS common io kdtree search surface filters registration sample_consensus segmentation visualization)
@@ -45,6 +46,19 @@ add_definitions(${PCL_DEFINITIONS}) # To include -march=native if set
 IF(WIN32)
 add_compile_options(-bigobj)
 ENDIF(WIN32)
+
+# kinetic issue, rtabmap now requires at least c++11
+if("$ENV{ROS_DISTRO}" STREQUAL "kinetic")
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+IF(COMPILER_SUPPORTS_CXX14)
+  set(CMAKE_CXX_STANDARD 14)
+ELSEIF(COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_STANDARD 11)
+ENDIF()
+endif()
+
 
 option(RTABMAP_SYNC_MULTI_RGBD "Build with multi RGBD camera synchronization support"  OFF)
 option(RTABMAP_SYNC_USER_DATA "Build with input user data support"  OFF)
@@ -103,6 +117,7 @@ add_message_files(
    Point3f.msg
    Goal.msg
    RGBDImage.msg
+   RGBDImages.msg
    UserData.msg
    GPS.msg
    Path.msg
@@ -119,9 +134,15 @@ add_message_files(
    ResetPose.srv
    SetGoal.srv
    SetLabel.srv
+   RemoveLabel.srv
    GetPlan.srv
    AddLink.srv
    GetNodeData.srv
+   GetNodesInRadius.srv
+   LoadDatabase.srv
+   DetectMoreLoopClosures.srv
+   GlobalBundleAdjustment.srv
+   CleanupLocalGrids.srv
    GetNearbyNodeData.srv
  )
 
@@ -199,6 +220,7 @@ SET(rtabmap_sync_lib_src
    src/impl/CommonDataSubscriberStereo.cpp
    src/impl/CommonDataSubscriberRGB.cpp
    src/impl/CommonDataSubscriberRGBD.cpp
+   src/impl/CommonDataSubscriberRGBDX.cpp
    src/impl/CommonDataSubscriberScan.cpp
    src/impl/CommonDataSubscriberOdom.cpp
    src/CoreWrapper.cpp # we put CoreWrapper here instead of plugins lib to avoid long compilation time on plugins lib
@@ -209,6 +231,8 @@ IF(RTABMAP_SYNC_MULTI_RGBD)
     src/impl/CommonDataSubscriberRGBD2.cpp
     src/impl/CommonDataSubscriberRGBD3.cpp
     src/impl/CommonDataSubscriberRGBD4.cpp
+    src/impl/CommonDataSubscriberRGBD5.cpp
+    src/impl/CommonDataSubscriberRGBD6.cpp
   )
 ENDIF(RTABMAP_SYNC_MULTI_RGBD)
   
@@ -237,10 +261,11 @@ SET(rtabmap_plugins_lib_src
    src/nodelets/point_cloud_assembler.cpp
    src/nodelets/undistort_depth.cpp
    src/nodelets/imu_to_tf.cpp
+   src/nodelets/rgbdx_sync.cpp
 )
 
 IF(${cv_bridge_VERSION_MAJOR} GREATER 1 OR ${cv_bridge_VERSION_MINOR} GREATER 10)
-   SET(rtabmap_plugins_lib_src ${rtabmap_plugins_lib_src} src/nodelets/rgbd_sync.cpp src/nodelets/stereo_sync.cpp src/nodelets/rgbd_relay.cpp)
+   SET(rtabmap_plugins_lib_src ${rtabmap_plugins_lib_src} src/nodelets/rgbd_sync.cpp src/nodelets/stereo_sync.cpp src/nodelets/rgb_sync.cpp src/nodelets/rgbd_relay.cpp)
 ELSE()
    ADD_DEFINITIONS("-DCV_BRIDGE_HYDRO")
 ENDIF()   
@@ -270,6 +295,19 @@ SET(Libraries
 )
 ADD_DEFINITIONS("-DWITH_APRILTAG_ROS")
 ENDIF(apriltag_ros_FOUND)
+
+# If fiducial_msgs is found, add definition
+IF(fiducial_msgs_FOUND)
+MESSAGE(STATUS "WITH fiducial_msgs")
+include_directories(
+  ${fiducial_msgs_INCLUDE_DIRS}
+)
+SET(Libraries
+  ${fiducial_msgs_LIBRARIES}
+  ${Libraries}
+)
+ADD_DEFINITIONS("-DWITH_FIDUCIAL_MSGS")
+ENDIF(fiducial_msgs_FOUND)
 
 ############################
 ## Declare a cpp library
@@ -318,6 +356,18 @@ set_target_properties(rtabmap_icp_odometry PROPERTIES OUTPUT_NAME "icp_odometry"
 add_executable(rtabmap_rgbd_sync src/RGBDSyncNode.cpp)
 target_link_libraries(rtabmap_rgbd_sync ${Libraries})
 set_target_properties(rtabmap_rgbd_sync PROPERTIES OUTPUT_NAME "rgbd_sync")
+
+add_executable(rtabmap_rgbdx_sync src/RGBDXSyncNode.cpp)
+target_link_libraries(rtabmap_rgbdx_sync ${Libraries})
+set_target_properties(rtabmap_rgbdx_sync PROPERTIES OUTPUT_NAME "rgbdx_sync")
+
+add_executable(rtabmap_stereo_sync src/StereoSyncNode.cpp)
+target_link_libraries(rtabmap_stereo_sync ${Libraries})
+set_target_properties(rtabmap_stereo_sync PROPERTIES OUTPUT_NAME "stereo_sync")
+
+add_executable(rtabmap_rgb_sync src/RGBSyncNode.cpp)
+target_link_libraries(rtabmap_rgb_sync ${Libraries})
+set_target_properties(rtabmap_rgb_sync PROPERTIES OUTPUT_NAME "rgb_sync")
 
 add_executable(rtabmap_rgbd_relay src/RGBDRelayNode.cpp)
 target_link_libraries(rtabmap_rgbd_relay ${Libraries})
@@ -387,6 +437,10 @@ set_target_properties(rtabmap_odom_msg_to_tf PROPERTIES OUTPUT_NAME "odom_msg_to
 add_executable(rtabmap_pointcloud_to_depthimage src/PointCloudToDepthImageNode.cpp)
 target_link_libraries(rtabmap_pointcloud_to_depthimage ${Libraries})
 set_target_properties(rtabmap_pointcloud_to_depthimage PROPERTIES OUTPUT_NAME "pointcloud_to_depthimage")
+
+add_executable(rtabmap_point_cloud_aggregator src/PointCloudAggregatorNode.cpp)
+target_link_libraries(rtabmap_point_cloud_aggregator ${Libraries})
+set_target_properties(rtabmap_point_cloud_aggregator PROPERTIES OUTPUT_NAME "rtabmap_point_cloud_aggregator")
 
 add_executable(rtabmap_point_cloud_assembler src/PointCloudAssemblerNode.cpp)
 target_link_libraries(rtabmap_point_cloud_assembler ${Libraries})
@@ -501,6 +555,9 @@ IF(costmap_2d_FOUND)
     target_link_libraries(rtabmap_costmap_plugins2
       ${costmap_2d_LIBRARIES}
     )
+    add_executable(rtabmap_costmap_voxel_markers src/costmap_2d/voxel_markers.cpp)
+    target_link_libraries(rtabmap_costmap_voxel_markers ${costmap_2d_LIBRARIES})
+    set_target_properties(rtabmap_costmap_voxel_markers PROPERTIES OUTPUT_NAME "voxel_markers")
 ENDIF(costmap_2d_FOUND)
 
 #############
@@ -520,6 +577,7 @@ catkin_install_python(PROGRAMS
   scripts/yaml_to_camera_info.py
   scripts/netvlad_tf_ros.py
   scripts/wifi_signal_pub.py
+  scripts/gazebo_ground_truth.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -541,6 +599,7 @@ install(TARGETS
    rtabmap_point_cloud_assembler
    rtabmap_camera
    rtabmap_rgbd_sync
+   rtabmap_rgbdx_sync
    rtabmap_rgbd_relay
    rtabmap_wifi_signal_sub
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -601,6 +660,7 @@ IF(costmap_2d_FOUND)
     install(TARGETS 
        rtabmap_costmap_plugins
        rtabmap_costmap_plugins2
+       rtabmap_costmap_voxel_markers
        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
