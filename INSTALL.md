@@ -7,8 +7,10 @@ There are many prerequisites. Please follow instructions on the linked webpages 
 - Install ros-melodic-desktop-full following [this](http://wiki.ros.org/melodic/Installation/Ubuntu)
   - **If you want to use ros-NOETIC remember to switch branch, NOTE it has not been fully tested**
 - Install ros prerequisites `sh ros-req.sh`. **In noetic is not fully tested**
-    - A simpler way might be to run ``` sudo apt install ros-{version}-rtabmap ros-{version}-rtabmap-ros
-sudo apt purge ros-{version}-rtabmap ros-{version}-rtabmap-ros ```. And install any other prerequisite while building the packages.
+    - A simpler way might be to run ``` sudo apt install ros-{version}-rtabmap ros-{version}-rtabmap-ros ``` and install any other prerequisite while building the packages. *IF you install rtabmap this way you need to UNINSTALL IT*
+     ```
+     sudo apt purge ros-{version}-rtabmap ros-{version}-rtabmap-ros 
+     ```
 - \[optional\] (For the notebook visualization) Install python3, pip3 and virtualenv
     - create a virtualenv with python3.6
     - Install in the virtualenv with `pip install -r requirements.txt` the required [packages](https://github.com/eliabntt/active_v_slam/blob/master/requirements.txt)
