@@ -1,0 +1,3 @@
+[submodule "src/custom_6dof_joint_controller"]
+	path = src/custom_6dof_joint_controller
+	url = https://github.com/eliabntt/custom_6dof_joint_controller.git
