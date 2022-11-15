@@ -32,6 +32,9 @@ There are many prerequisites. Please follow instructions on the linked webpages 
     git clone https://github.com/eliabntt/rtabmap && cd rtabmap
     ```
     *Use in catkin workspace the `rtabmap_ros` AND the `camera_best_heading` from the **noetic** branch*
+    
+    *NOTE: if you find problems with this checkout rtabmap at the 5d200a0 commit and `cp <your-active_v_slam>/rtabmap-edited/Rtabmap_5d200a0.cpp <your-rtabmap>/corelib/src/Rtabmap.cpp`
+    
     - build and install rtabmap. **NOTE** Be careful that the end of `cmake ..` must be "Build files have been written to ..." w/o ANY _subsequent_ warnings. GTSAM, g2o, OpenCV, libpointmatcher, and octomape should be automatically recognized and enabled for the building.
     - Test the installation by running `rtabmap` command in a console. A preemptive `sudo ldconfig` might be necessary.
 - Gazebo: 
