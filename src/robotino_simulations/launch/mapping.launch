@@ -13,10 +13,10 @@
     <arg name="gt" default=""/>
 
     <!-- Arguments for rtabmap and other nodes -->
-    <arg name="camera_info_topic" default="/camera2/color/camera_info"/>  <!-- /camera_info -->
-    <arg name="rgb_topic" default="/camera2/color/image_raw"/> <!-- todo try compressed -->
+    <arg name="camera_info_topic" default="/my_robot_0/camera_link/0/camera_info"/>  <!-- /camera_info -->
+    <arg name="rgb_topic" default="/my_robot_0/camera_link/0/rgb/image_raw"/> <!-- todo try compressed -->
     <arg name="depth_topic" default="/camera/depth/image_rect_raw" unless="$(arg sim)"/>
-    <arg name="depth_topic" default="/camera2/depth/image_raw" if="$(arg sim)"/>
+    <arg name="depth_topic" default="/my_robot_0/camera_link/0/depth/image_raw" if="$(arg sim)"/>
     <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
     <arg name="scanner" default="/scan" unless="$(arg sim)"/>
 
@@ -24,7 +24,7 @@
     <arg name="max_depth" default="4"/> <!-- max features depth-->
     <arg name="min_depth" default="0.4"/> <!-- min features depth-->
     <arg name="detector" default="2"/>
-
+    <arg name="frame_id" default="my_robot_0/base_link"/>
 
     <group ns="rtabmap">
 
@@ -56,9 +56,9 @@
             <param name="Reg/Strategy" type="int"
                    value="2"/>            <!-- 0=Visual, 1=ICP (1 requires scan)--> <!-- todo try 2, 0 ,1 -->
 
-            <param if="$(arg gt)" name="ground_truth_frame_id" value="world"/>
+<!--            <param if="$(arg gt)" name="ground_truth_frame_id" value="world"/>-->
             <param unless="$(arg gt)" name="ground_truth_frame_id" value=""/>
-            <param if="$(arg gt)" name="ground_truth_base_frame_id" value="base_footprint_gt"/>
+<!--            <param if="$(arg gt)" name="ground_truth_base_frame_id" value="my_robot_0/camera_link"/>-->
             <param unless="$(arg gt)" name="ground_truth_base_frame_id" value=""/>
 
             <param name="queue_size" value="30"/>
@@ -66,7 +66,7 @@
             <!-- Basic RTAB-Map Parameters -->
             <param name="publish_tf" value="true"/>
             <param name="database_path" type="string" value="$(arg database_path)"/>
-            <param name="frame_id" type="string" value="base_link"/>
+            <param name="frame_id" type="string" value="$(arg frame_id)"/>
             <!-- Basic RTAB-Map Parameters-->
 
             <param name="odom_sensor_sync" value="true"/>
@@ -231,7 +231,7 @@
         </node>
 
         <node pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="log">
-            <param name="frame_id" type="string" value="base_link"/>
+            <param name="frame_id" type="string" value="$(arg frame_id)"/>
             <param name="queue_size" value="1"/>
             <param name="publish_tf" value="false"/>
             <remap from="scan" to="$(arg scanner)"/>
@@ -252,7 +252,7 @@
 <!--            <param name="subscribe_rgb" type="bool" value="false"/>-->
 <!--            <param name="subscribe_rgbd" type="bool" value="true"/>-->
 <!--            <param name="subscribe_scan" type="bool" value="true"/>-->
-<!--            <param name="frame_id" type="string" value="base_link"/>-->
+<!--            <param name="frame_id" type="string" value="$(arg frame_id)"/>-->
 <!--            <remap from="scan" to="$(arg scanner)"/>-->
 <!--        </node>-->
     </group>

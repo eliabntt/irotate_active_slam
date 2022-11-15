@@ -10,47 +10,6 @@
     <arg name="explore" default="false"/>
     <arg name="gt" default="$(arg sim)"/>
 
-    <group unless="$(arg sim)">
-        <node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
-            <param name="hostname" value="$(arg hostname)"/>
-            <param name="max_linear_vel" value="0.1"/>
-            <param name="min_linear_vel" value="0.01"/>
-            <param name="max_angular_vel" value="1.0"/>
-            <param name="min_angular_vel" value="0.01"/>
-            <remap from="robotino_joint_states" to="joint_states"/>
-            <!--remap from="image_raw" to="image"/-->
-        </node>
-        <node name="robotino_odometry_node" pkg="robotino_node" type="robotino_odometry_node" output="screen">
-            <param name="hostname" value="$(arg hostname)"/>
-        </node>
-
-        <group unless="$(arg remote)">
-            <!-- load camera and lidar -->
-            <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-                <arg name="enable_infra1" value="false"/>
-                <arg name="enable_infra2" value="false"/>
-                <arg name="enable_fisheye" value="false"/>
-                <arg name="depth_fps" default="60"/>
-                <arg name="color_fps" default="60"/>
-                <arg name="align_depth" value="true"/>
-                <arg name="enable_sync" value="true"/>
-                <arg name="clip_distance" value="3"/>
-                <arg name="allow_no_texture_points" value="false"/>
-            </include>
-
-            <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
-                <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
-                <param name="serial_baudrate" type="int" value="115200"/><!--A1/A2 -->
-                <!--param name="serial_baudrate"     type="int"    value="256000"--><!--A3 -->
-                <param name="frame_id" type="string" value="base_link"/>
-                <param name="inverted" type="bool" value="false"/>
-                <param name="angle_compensate" type="bool" value="true"/>
-            </node>
-
-            <rosparam command="load" file="$(find robotino_description)/urdf/joints.yaml"/>
-        </group>
-
-    </group>
 
 
     <!--RTAB-->

@@ -56,14 +56,14 @@ nlmpc::nlmpc(const ros::NodeHandle &nh, const ros::NodeHandle &private_nh) :
 
     message_filters::Subscriber<nav_msgs::Odometry> odomRobotSub(nh_, odomRobotTopic, 1);
     message_filters::Subscriber<nav_msgs::Odometry> odomCamSub(nh_, odomCamTopic, 1);
-    if (sim) {
-        exact.reset(new sync_exact(MyExactSyncPolicy (10), odomRobotSub, odomCamSub));
-        exact->registerCallback(boost::bind(&nlmpc::odomCallback,this, _1, _2));
-    }
-    else{
+//    if (sim) {
+//        exact.reset(new sync_exact(MyExactSyncPolicy (10), odomRobotSub, odomCamSub));
+//        exact->registerCallback(boost::bind(&nlmpc::odomCallback,this, _1, _2));
+//    }
+//    else{
         approx.reset(new sync_approx(MyApproxSyncPolicy (10), odomRobotSub, odomCamSub));
         approx->registerCallback(boost::bind(&nlmpc::odomCallback,this, _1, _2));
-    }
+//    }
 
 
     //  spinner.start();
@@ -254,7 +254,7 @@ void nlmpc::oscillationCheck(const Eigen::Vector3d &pos) {
                 pubRobotCmd.publish(msg);
                 ROS_WARN_STREAM("BIG ODOM CHANGE!");
                 need_init = true;
-                ros::Duration(3).sleep();
+                ros::Duration(3).sleep(); // this is necessary to allow time to rtabmap to rectify the map if it's due to a loop closure
             }
             if (prev_min_dist != -1) {
                 setObsPen(prev_pen_obs);

@@ -13,6 +13,9 @@
 #include "rtabmap_ros/Info.h"
 #include "rtabmap_ros/GetNearbyNodeData.h"
 #include "rtabmap/core/Link.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/subscriber.h>
@@ -61,8 +64,9 @@ private:
     std::string odom_robot_topic, odom_cam_topic;
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr &odomRobot, const nav_msgs::Odometry::ConstPtr &odomCam);
-
-    tf::TransformListener listener_;
+		tf2_ros::Buffer tfBuffer_;
+		tf2_ros::TransformListener tfListener_;
+		tf::TransformListener listener_;
 
     void transform_odom(const nav_msgs::Odometry::ConstPtr &odomRobot, const nav_msgs::Odometry::ConstPtr &odomCam);
     void transform_pose(geometry_msgs::Pose &pose);

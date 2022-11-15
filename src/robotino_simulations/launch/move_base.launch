@@ -9,7 +9,7 @@
 
     <arg name="global_frame" default="map"/>
     <arg name="odom_frame" default="odom"/>
-    <arg name="base_frame" default="base_link"/>
+    <arg name="base_frame" default="my_robot_0/base_link"/>
 
     <arg name="base_global_planner" default="global_planner/GlobalPlanner"/> <!--  ompl_global_planner/OmplGlobalPlanner rrt_star/RRTPlan -->
     <!--arg name="base_local_planner" default="teb_local_planner/TebLocalPlannerROS"/-->
@@ -19,6 +19,7 @@
     <arg name="scanner" default="/robot/laser/scan" if="$(arg sim)"/>
     <arg name="scanner" default="/robot/laser/scan" unless="$(arg sim)"/>
 
+    <arg name="laser_link" default="my_robot_0/lasersensor_link"/>
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="log">
 
         <param name="base_global_planner" value="$(arg base_global_planner)"/>
@@ -34,8 +35,8 @@
         <rosparam file="$(find robotino_simulations)/config/costmap_common.yaml" command="load" ns="global_costmap" />
         <rosparam file="$(find robotino_simulations)/config/costmap_common.yaml" command="load" ns="local_costmap" />
 
-        <param name="global_costmap/obstacle_layer/laser/sensor_frame" value="lasersensor_link"/>
-        <param name="local_costmap/obstacle_layer/laser/sensor_frame" value="lasersensor_link"/>
+        <param name="global_costmap/obstacle_layer/laser/sensor_frame" value="$(arg laser_link)"/>
+        <param name="local_costmap/obstacle_layer/laser/sensor_frame" value="$(arg laser_link)"/>
 
         <param name="global_costmap/obstacle_layer/laser/topic" value="$(arg scanner)"/>
         <param name="local_costmap/obstacle_layer/laser/topic" value="$(arg scanner)"/>

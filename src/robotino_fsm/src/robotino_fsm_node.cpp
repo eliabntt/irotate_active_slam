@@ -192,7 +192,7 @@ robotino_fsm_node::~robotino_fsm_node() {}
 
 robotino_fsm_node::robotino_fsm_node(ros::NodeHandle nh, ros::NodeHandle private_nh) : nh_(nh),
                                                                                        private_nh_(private_nh),
-                                                                                       spinner(4) {
+                                                                                       spinner(4), tfListener_(tfBuffer_) {
 
     robotino_fsm_node::init_vars();
 
@@ -200,14 +200,14 @@ robotino_fsm_node::robotino_fsm_node(ros::NodeHandle nh, ros::NodeHandle private
     // get odom pose + rotations at the same time from both cam and base
     message_filters::Subscriber<nav_msgs::Odometry> odomRobotSub(nh_, odom_robot_topic, 1);
     message_filters::Subscriber<nav_msgs::Odometry> odomCamSub(nh_, odom_cam_topic, 1);
-    if (sim) {
-        exact.reset(new sync_exact(MyExactSyncPolicy (10), odomRobotSub, odomCamSub));
-        exact->registerCallback(boost::bind(&robotino_fsm_node::odomCallback,this, _1, _2));
-    }
-    else{
+//    if (sim) {
+//        exact.reset(new sync_exact(MyExactSyncPolicy (10), odomRobotSub, odomCamSub));
+//        exact->registerCallback(boost::bind(&robotino_fsm_node::odomCallback,this, _1, _2));
+//    }
+//    else{
         approx.reset(new sync_approx(MyApproxSyncPolicy (10), odomRobotSub, odomCamSub));
         approx->registerCallback(boost::bind(&robotino_fsm_node::odomCallback,this, _1, _2));
-    }
+//    }
 
     // get mpc state real time
     mpcStateClient = nh_.subscribe<std_msgs::Int8>(mpcStateTopic, 1, &robotino_fsm_node::mpcStateCallback, this);
@@ -932,23 +932,49 @@ void robotino_fsm_node::init_vars() {
 }
 
 void robotino_fsm_node::transform_pose(geometry_msgs::Pose &pose) {
-    tf::Transform poseToTarget;
-    tf::poseMsgToTF(pose, poseToTarget);
-    tf::StampedTransform map_to_odom;
-    listener_.lookupTransform("/map", "odom", ros::Time::now(), map_to_odom);
-    tf::poseTFToMsg(map_to_odom * poseToTarget, pose);
+	geometry_msgs::PoseStamped pose_stamped;
+	pose_stamped.pose = pose;
+	pose_stamped.header.frame_id = "world";
+	pose_stamped.header.stamp = ros::Time(0);
+	while(!tfBuffer_.canTransform("map", "odom", ros::Time(0), ros::Duration(0.1))){
+		ROS_INFO("waiting for tf");
+	};
+
+	pose = tfBuffer_.transform(pose_stamped, "world").pose;
+//	ROS_INFO("transform_pose");
+//	tf::Transform poseToTarget;
+//    tf::poseMsgToTF(pose, poseToTarget);
+//		tf::StampedTransform map_to_odom;
+//    listener_.lookupTransform("/world", "my_robot_0/yaw_link", ros::Time::now(), map_to_odom);
+//    tf::poseTFToMsg(map_to_odom * poseToTarget, pose);
 }
 
 void
 robotino_fsm_node::transform_odom(const nav_msgs::Odometry::ConstPtr &odomRobot,
                                   const nav_msgs::Odometry::ConstPtr &odomCam) {
-    tf::Transform odom_to_target;
-    tf::poseMsgToTF(odomRobot->pose.pose, odom_to_target);
-    tf::StampedTransform map_to_odom;
-    listener_.lookupTransform("/map", "odom", ros::Time::now(), map_to_odom);
-    tf::poseTFToMsg(map_to_odom * odom_to_target, globalRobot);
-    tf::poseMsgToTF(odomCam->pose.pose, odom_to_target);
-    tf::poseTFToMsg(map_to_odom * odom_to_target, globalCam);
+
+	geometry_msgs::PoseStamped pose_stamped;
+	pose_stamped.pose = odomRobot->pose.pose;
+	pose_stamped.header.frame_id = "world";
+	pose_stamped.header.stamp = ros::Time(0);
+	while(!tfBuffer_.canTransform("map", "odom", ros::Time(0), ros::Duration(0.1))){
+		ROS_INFO("waiting for tf");
+	};
+
+	globalRobot = tfBuffer_.transform(pose_stamped, "world").pose;
+	ROS_INFO_STREAM(globalRobot);
+
+	pose_stamped.pose = odomCam->pose.pose;
+	pose_stamped.header.frame_id = "world";
+	globalCam = tfBuffer_.transform(pose_stamped, "world").pose;
+
+//    tf::Transform odom_to_target;
+//    tf::poseMsgToTF(odomRobot->pose.pose, odom_to_target);
+//    tf::StampedTransform map_to_odom;
+//    listener_.lookupTransform("/world", "my_robot_0/yaw_link", ros::Time::now(), map_to_odom);
+//    tf::poseTFToMsg(map_to_odom * odom_to_target, globalRobot);
+//    tf::poseMsgToTF(odomCam->pose.pose, odom_to_target);
+//    tf::poseTFToMsg(map_to_odom * odom_to_target, globalCam);
 }
 
 void robotino_fsm_node::odomCallback(const nav_msgs::Odometry::ConstPtr &odomRobot,

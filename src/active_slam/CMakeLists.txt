@@ -14,6 +14,7 @@ geometry_msgs
 roscpp
 rospy
 grid_map_ros
+qt_gui_cpp
 message_generation)
 
 add_service_files(

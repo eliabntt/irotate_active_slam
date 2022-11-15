@@ -9,5 +9,9 @@
     <param name="mid_optimizer" type="bool" value="$(arg mid_optimizer)"/>
     <param name="pre_fix" type="bool" value="$(arg pre_fix)"/>
     <param name="is_sim" type="bool" value="$(arg sim)"/>
-    <node name="robotino_fsm" pkg="robotino_fsm" type="robotino_fsm_node" respawn="true" clear_params="true" output="screen"/>
+    <node name="robotino_fsm" pkg="robotino_fsm" type="robotino_fsm_node" respawn="true" clear_params="true" output="screen">
+      <param name="robot_odom" type="str" value="$(arg robot_odom)"/>
+      <param name="cam_odom" type="str" value="$(arg cam_odom)"/>
+
+    </node>
 </launch>

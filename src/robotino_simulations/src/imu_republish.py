@@ -35,8 +35,8 @@ def callback_reloc(body, cam):
     odom = body
     loc_pub.publish(odom)
 
-body_sub = message_filters.Subscriber('/imu_body/data', Imu)
-cam_sub = message_filters.Subscriber('/imu_cam/data', Imu)
+body_sub = message_filters.Subscriber('/my_robot_0/imu_body', Imu)
+cam_sub = message_filters.Subscriber('/my_robot_0/imu_cam', Imu)
 
 rob_local = message_filters.Subscriber('/rtabmap/localization_pose', PoseWithCovarianceStamped)
 ekf_cam = message_filters.Subscriber('/odometry/filtered', Odometry)
@@ -46,7 +46,7 @@ loc_pub = rospy.Publisher('/robot_reloc_filtered', PoseWithCovarianceStamped, qu
 
 rospy.init_node('imu_cam_filtered', anonymous=True)
 
-ts = message_filters.TimeSynchronizer([body_sub, cam_sub], 100)
+ts = ApproximateTimeSynchronizer([body_sub, cam_sub], 100, 0.1)
 ts.registerCallback(callback)
 
 ts2 = ApproximateTimeSynchronizer([rob_local, ekf_cam], 10, 0.2)

@@ -73,9 +73,9 @@ bool FrontierExploration::getFrontierServiceCallback(
 
     // Init Transform listener and get current robot pose
     tf::StampedTransform robot_pose_tf;
-    robot_pose_listener_.waitForTransform("map", "base_link", ros::Time(0),
+    robot_pose_listener_.waitForTransform("map", "my_robot_0/base_link", ros::Time(0),
                                           ros::Duration(1.0));
-    robot_pose_listener_.lookupTransform("map", "base_link",
+    robot_pose_listener_.lookupTransform("map", "my_robot_0/base_link",
                                          ros::Time(0), robot_pose_tf);
 
     x_robot = robot_pose_tf.getOrigin().getX();
