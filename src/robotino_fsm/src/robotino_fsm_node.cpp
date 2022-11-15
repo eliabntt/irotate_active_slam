@@ -962,7 +962,6 @@ robotino_fsm_node::transform_odom(const nav_msgs::Odometry::ConstPtr &odomRobot,
 	};
 
 	globalRobot = tfBuffer_.transform(pose_stamped, "world").pose;
-	ROS_INFO_STREAM(globalRobot);
 
 	pose_stamped.pose = odomCam->pose.pose;
 	pose_stamped.header.frame_id = "world";
